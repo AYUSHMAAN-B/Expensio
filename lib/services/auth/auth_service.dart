@@ -25,9 +25,6 @@ class AuthService {
         name: name,
         email: email,
         photo: null,
-        bio: null,
-        followers: 0,
-        following: 0,
       );
 
       _firestore.collection('users').doc(userCredential.user!.uid).set(newUser.toMap());
@@ -69,9 +66,6 @@ class AuthService {
         name: userCredential.user!.displayName ?? 'Null Name',
         email: userCredential.user!.email ?? 'Null Email',
         photo: userCredential.user!.photoURL,
-        bio: null,
-        followers: 0,
-        following: 0,
       );
 
       // Store user details in Firestore
@@ -108,6 +102,7 @@ class AuthService {
     return await _auth.signOut();
   }
 
+  // Forgot Password
   Future<void> forgotPassword(String email) async {
     try {
       return await _auth.sendPasswordResetEmail(email: email);

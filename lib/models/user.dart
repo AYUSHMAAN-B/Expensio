@@ -5,18 +5,12 @@ class UserProfile {
   final String name;
   final String email;
   final String? photo;
-  String? bio;
-  final int followers;
-  final int following;
 
   UserProfile({
     required this.id,
     required this.name,
     required this.email,
     required this.photo,
-    required this.bio,
-    required this.followers,
-    required this.following,
   });
 
   factory UserProfile.fromDocument(DocumentSnapshot doc) {
@@ -25,21 +19,15 @@ class UserProfile {
       name: doc['name'],
       email: doc['email'],
       photo: doc['photo'],
-      bio: doc['bio'],
-      followers: doc['followers'],
-      following: doc['following'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id' : id,
-      'name' : name,
-      'email' : email,
-      'photo' : photo,
-      'bio' : bio,
-      'followers' : followers,
-      'following' : following,
+      'id': id,
+      'name': name,
+      'email': email,
+      'photo': photo,
     };
   }
 }

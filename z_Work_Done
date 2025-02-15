@@ -1,0 +1,13 @@
+[14 / 02 / 2025]
+
+    [x] Finished with the FirebaseAuth and FirebaseFirestore setup.
+    [x] Add the boiler plate code.
+    [x] Done with date UI for Day, Month and Year.
+
+[15 / 02 / 2025]
+
+    [x] Add models [UserProfile, Expense, Pot].
+    [x] Done with UI for adding the expense.
+    [x] Done with UI for Daily Expense.
+    [ ] Have to work on UI for [Month and Year].
+    [ ] Have to work on Firestore functions to add the expense.
