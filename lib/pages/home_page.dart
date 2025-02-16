@@ -2,6 +2,7 @@
 
 import 'package:expense_tracker/components/daily_expense_card.dart';
 import 'package:expense_tracker/components/my_drawer.dart';
+import 'package:expense_tracker/fake_data.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -31,6 +32,12 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
+  }
+
+  bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   // Add Expense Dialog
@@ -325,6 +332,30 @@ class _HomePageState extends State<HomePage>
         child: Icon(Icons.add),
       ),
 
+      // Bottom Navigation Bar
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+        items: [
+          // Home
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'HOME',
+          ),
+
+          // Pots
+          BottomNavigationBarItem(
+            icon: Icon(Icons.monetization_on),
+            label: 'POTS',
+          ),
+
+          // Stats
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_graph),
+            label: 'STATS',
+          ),
+        ],
+      ),
+
       // Body
       body: SafeArea(
         child: Column(
@@ -366,7 +397,22 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  // Widget For Daily Expenses
   Widget widgetDailyExpenses() {
+    // Incomes
+    final incomes = dummyExpenses
+        .where((expense) =>
+            (expense.type == ExpenseType.Income) &&
+            isSameDate(expense.datetime, selectedDate))
+        .toList();
+
+    // Expenses
+    final expenses = dummyExpenses
+        .where((expense) =>
+            (expense.type == ExpenseType.Expense) &&
+            isSameDate(expense.datetime, selectedDate))
+        .toList();
+
     // Get Day, Month, and Year
     String day = selectedDate.day.toString();
     String month = DateFormat('MMMM').format(selectedDate);
@@ -502,16 +548,36 @@ class _HomePageState extends State<HomePage>
           ),
         ),
 
-        const SizedBox(height: 16),
-
-        Text(
-          'Tap on \'+\' to add new item and long press an entry to edit.',
-          style: TextStyle(
-            fontSize: 12,
+        if (incomes.isEmpty) ...[
+          const SizedBox(height: 16),
+          Text(
+            'Tap on \'+\' to add new item and long press an entry to edit.',
+            style: TextStyle(
+              fontSize: 12,
+            ),
           ),
-        ),
+          const SizedBox(height: 16),
+        ] else
+          const SizedBox(height: 4),
 
-        const SizedBox(height: 16),
+        // Display Incomes
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: incomes.length,
+          itemBuilder: (context, index) {
+            final income = incomes[index];
+            return Padding(
+              padding: (index == incomes.length - 1)
+                  ? const EdgeInsets.only(bottom: 4.0)
+                  : const EdgeInsets.all(0.0),
+              child: DailyExpenseCard(
+                category: income.categoryName,
+                name: income.name,
+                amount: income.amount,
+              ),
+            );
+          },
+        ),
 
         // Expense Field
         Container(
@@ -544,42 +610,98 @@ class _HomePageState extends State<HomePage>
           ),
         ),
 
-        const SizedBox(height: 6),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
-            children: [
-              // Expenses
-
-              DailyExpenseCard(
-                name: 'Snacks',
-                amount: 80.00,
-              ),
-              DailyExpenseCard(
-                category: 'Wants',
-                name: 'Order',
-                amount: 240.00,
-              ),
-              DailyExpenseCard(
-                category: 'Needs',
-                name: 'Needs',
-                amount: 180.00,
-              ),
-            ],
+        if (expenses.isEmpty) ...[
+          const SizedBox(height: 16),
+          Text(
+            'Tap on \'+\' to add new item and long press an entry to edit.',
+            style: TextStyle(
+              fontSize: 12,
+            ),
           ),
+        ] else
+          const SizedBox(height: 4),
+
+        // Display Expenses
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: expenses.length,
+          itemBuilder: (context, index) {
+            final expense = expenses[index];
+            return DailyExpenseCard(
+              category: expense.categoryName,
+              name: expense.name,
+              amount: expense.amount,
+            );
+          },
         ),
       ],
     );
   }
 
+  // Widget For MOnthly Expenses
   Widget widgetMontlyExpenses() {
     // Get Month, and Year
     String month = DateFormat('MMMM').format(selectedDate);
     String year = selectedDate.year.toString();
 
+    // // Previous Month Expenses
+    // List<Expense> previousMonthExpenses = dummyExpenses.where((expense) {
+    //   if (selectedDate.month == 1) {
+    //     return expense.datetime.year == selectedDate.year - 1 &&
+    //         expense.datetime.month == 12;
+    //   } else {
+    //     return expense.datetime.year == selectedDate.year &&
+    //         expense.datetime.month == selectedDate.month;
+    //   }
+    // }).toList();
+
+    // final previousTotalMonthIncome = previousMonthExpenses
+    //     .where((expense) => expense.type == ExpenseType.Income)
+    //     .toList()
+    //     .fold(0.0, (sum, expense) => sum + expense.amount);
+    // final previousTotalMonthExpense = previousMonthExpenses
+    //     .where((expense) => expense.type == ExpenseType.Expense)
+    //     .toList()
+    //     .fold(0.0, (sum, expense) => sum + expense.amount);
+
+    // final carryForward = previousTotalMonthIncome - previousTotalMonthExpense;
+
+    // Current Month Expenses
+    List<Expense> currentMonthExpenses = dummyExpenses
+        .where((expense) =>
+            expense.datetime.year == selectedDate.year &&
+            expense.datetime.month == selectedDate.month)
+        .toList();
+
+    final totalMonthIncome = currentMonthExpenses
+        .where((expense) => expense.type == ExpenseType.Income)
+        .toList()
+        .fold(0.0, (sum, expense) => sum + expense.amount);
+    final totalMonthExpense = currentMonthExpenses
+        .where((expense) => expense.type == ExpenseType.Expense)
+        .toList()
+        .fold(0.0, (sum, expense) => sum + expense.amount);
+
+    // Group expenses by day
+    Map<String, List<Expense>> groupedExpenses = {};
+
+    for (var expense in currentMonthExpenses) {
+      String dayKey = DateFormat('yyyy-MM-dd').format(expense.datetime);
+
+      if (!groupedExpenses.containsKey(dayKey)) {
+        groupedExpenses[dayKey] = [];
+      }
+
+      groupedExpenses[dayKey]!.add(expense);
+    }
+
+    // Sort keys (dates) in descending order
+    List<String> sortedDates = groupedExpenses.keys.toList()
+      ..sort((a, b) => b.compareTo(a));
+
     return Column(
       children: [
+        // Date Field
         Container(
           height: 50,
           width: double.infinity,
@@ -653,17 +775,179 @@ class _HomePageState extends State<HomePage>
               ),
             ],
           ),
-        )
+        ),
+
+        const SizedBox(height: 16),
+
+        // Income, Expense, Balance Information
+        Container(
+          height: 110,
+          width: double.infinity,
+          margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+          padding: EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Income & Expense
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Income (Credit)'),
+                      Text('₹ $totalMonthIncome')
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('Expense (Debit)'),
+                      Text('₹ $totalMonthExpense')
+                    ],
+                  ),
+                ],
+              ),
+
+              // C/F and Balance
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [Text('C / F'), Text('₹ 00.00')],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('Balance'),
+                      Text('₹ ${totalMonthIncome - totalMonthExpense}')
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // All Month Expenses
+        Expanded(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: sortedDates.length,
+            itemBuilder: (context, index) {
+              // Get the date and expenses for date
+              String dateKey = sortedDates[index];
+              List<Expense> dailyExpenses = groupedExpenses[dateKey]!;
+
+              return Container(
+                margin: (index == sortedDates.length - 1)
+                    ? EdgeInsets.only(
+                        left: 8.0, right: 8.0, top: 8.0, bottom: 77.0)
+                    : EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                padding: EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Date Header
+                    Text(
+                      DateFormat('dd MMM yyyy').format(DateTime.parse(dateKey)),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Expense List for the Day
+                    Column(
+                      children: dailyExpenses.map((expense) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                expense.name,
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              ),
+                              Text(
+                                "₹ ${expense.amount.toStringAsFixed(2)}",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: expense.type == ExpenseType.Income
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ],
     );
   }
 
+  // Widget For Yearly Expenses
   Widget widgetYearlyExpenses() {
     // Get Year
     String year = selectedDate.year.toString();
 
+    List<String> months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'July',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    List<Expense> filteredExpenses = dummyExpenses
+        .where((expense) => expense.datetime.year == selectedDate.year)
+        .toList();
+
+    // Group expenses by day
+    Map<String, List<Expense>> groupedExpenses = {};
+
+    for (var expense in filteredExpenses) {
+      String monthKey = DateFormat('MMM').format(expense.datetime);
+
+      if (!groupedExpenses.containsKey(monthKey)) {
+        groupedExpenses[monthKey] = [];
+      }
+
+      groupedExpenses[monthKey]!.add(expense);
+    }
+
     return Column(
       children: [
+        // Date Field
         Container(
           height: 50,
           width: double.infinity,
@@ -727,7 +1011,118 @@ class _HomePageState extends State<HomePage>
               ),
             ],
           ),
-        )
+        ),
+
+        const SizedBox(height: 16),
+
+        // Income - Expense Header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            const SizedBox(width: 28),
+            Row(
+              children: [
+                Text('Income (Credit)'),
+                const SizedBox(width: 16),
+                Text('Expense (Debit)'),
+              ],
+            ),
+            Text('Balance'),
+          ],
+        ),
+
+        // C/F & Balance
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('C / F'),
+              Text('₹ 0.00'),
+            ],
+          ),
+        ),
+
+        // List<Expenses>
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: 12,
+          itemBuilder: (context, index) {
+            final monthIncomes = groupedExpenses[months[index]]
+                    ?.where((expense) => expense.type == ExpenseType.Income)
+                    .toList() ??
+                [];
+            final monthExpenses = groupedExpenses[months[index]]
+                    ?.where((expense) => expense.type == ExpenseType.Expense)
+                    .toList() ??
+                [];
+
+            final totalMonthIncome =
+                monthIncomes.fold(0.0, (sum, expense) => sum + expense.amount);
+            final totalMonthExpense =
+                monthExpenses.fold(0.0, (sum, expense) => sum + expense.amount);
+
+            // if (monthIncomes.isEmpty && monthExpenses.isEmpty) {
+            //   return const SizedBox();
+            // }
+
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      // Month Name
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          months[index],
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+
+                      // Total Month Income
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          '₹ ${totalMonthIncome.toStringAsFixed(2)}',
+                          textAlign: TextAlign.right,
+                          // style: TextStyle(color: Colors.green),
+                        ),
+                      ),
+
+                      // Total Month Expense
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          '₹ ${totalMonthExpense.toStringAsFixed(2)}',
+                          textAlign: TextAlign.right,
+                          // style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+
+                      // Month Balance
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          '₹ ${(totalMonthIncome - totalMonthExpense).toStringAsFixed(2)}',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                              // color: (totalMonthIncome - totalMonthExpense) >= 0
+                              //     ? Colors.green
+                              //     : Colors.red,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 2),
+                ],
+              ),
+            );
+          },
+        ),
       ],
     );
   }

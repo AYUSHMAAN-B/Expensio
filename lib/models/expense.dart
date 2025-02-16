@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class Expense {
   final String id;
@@ -8,6 +9,8 @@ class Expense {
   final String desc;
   final double amount;
   final String? categoryId;
+  final String? categoryName;
+  final Color? categoryColor;
   final ExpenseType type;
   final DateTime datetime;
 
@@ -17,6 +20,8 @@ class Expense {
     required this.desc,
     required this.amount,
     required this.categoryId,
+    required this.categoryName,
+    required this.categoryColor,
     required this.type,
     required this.datetime,
   });
@@ -28,6 +33,8 @@ class Expense {
       desc: doc['desc'],
       amount: doc['amount'],
       categoryId: doc['categoryId'],
+      categoryName: doc['categoryName'],
+      categoryColor: doc['categoryColor'],
       type: doc['type'],
       datetime: doc['datetime'],
     );
@@ -40,6 +47,8 @@ class Expense {
       'desc': desc,
       'amount': amount,
       'categoryId': categoryId,
+      'categoryName': categoryName,
+      'categoryColor': categoryColor,
       'type': type,
       'datetime': datetime,
     };

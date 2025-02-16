@@ -7,7 +7,7 @@ class DailyExpenseCard extends StatelessWidget {
 
   const DailyExpenseCard({
     super.key,
-    this.category,
+    required this.category,
     required this.name,
     required this.amount,
   });
