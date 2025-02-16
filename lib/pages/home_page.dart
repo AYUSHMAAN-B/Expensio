@@ -406,12 +406,16 @@ class _HomePageState extends State<HomePage>
             isSameDate(expense.datetime, selectedDate))
         .toList();
 
+    final totalIncomeForTheDay = incomes.fold(0.0, (sum, expense) => sum + expense.amount);
+
     // Expenses
     final expenses = dummyExpenses
         .where((expense) =>
             (expense.type == ExpenseType.Expense) &&
             isSameDate(expense.datetime, selectedDate))
         .toList();
+
+    final totalExpenseForTheDay = expenses.fold(0.0, (sum, expense) => sum + expense.amount);
 
     // Get Day, Month, and Year
     String day = selectedDate.day.toString();
@@ -538,7 +542,7 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
               Text(
-                '₹ 0.00',
+                '₹ $totalIncomeForTheDay',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -600,7 +604,7 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
               Text(
-                '₹ 400.00',
+                '₹ $totalExpenseForTheDay',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

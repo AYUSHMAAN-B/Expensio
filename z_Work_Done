@@ -9,5 +9,9 @@
     [x] Add models [UserProfile, Expense, Pot].
     [x] Done with UI for adding the expense.
     [x] Done with UI for Daily Expense.
-    [ ] Have to work on UI for [Month and Year].
-    [ ] Have to work on Firestore functions to add the expense.
+
+[16 / 02 / 2025]
+
+    [x] Done with HomePage UI
+    [x] Wrote basic CRUD functions for Firestore
+    [x] Initialized Local Storage for better UI reflection
