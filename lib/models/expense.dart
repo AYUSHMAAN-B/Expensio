@@ -35,8 +35,8 @@ class Expense {
       categoryId: doc['categoryId'],
       categoryName: doc['categoryName'],
       categoryColor: doc['categoryColor'],
-      type: doc['type'],
-      datetime: doc['datetime'],
+      type: ExpenseType.values.firstWhere((e) => e.toString() == doc['type']),
+      datetime: (doc['datetime'] as Timestamp).toDate(),
     );
   }
 
@@ -49,7 +49,7 @@ class Expense {
       'categoryId': categoryId,
       'categoryName': categoryName,
       'categoryColor': categoryColor,
-      'type': type,
+      'type': type.toString(),
       'datetime': datetime,
     };
   }

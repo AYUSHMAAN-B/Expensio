@@ -1,5 +1,6 @@
 import 'package:expense_tracker/firebase_options.dart';
 import 'package:expense_tracker/pages/authentication/initial_page.dart';
+import 'package:expense_tracker/services/database/database_provider.dart';
 import 'package:expense_tracker/themes/theme_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => DatabaseProvider()),
       ],
       child: const MyApp(),
     ),

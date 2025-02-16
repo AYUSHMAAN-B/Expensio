@@ -22,34 +22,51 @@ class DatabaseService {
     String desc,
     double amount,
     ExpenseType type,
-    String categoryId,
+    String? categoryId,
+    DateTime datetime,
   ) async {
     try {
       // Get the userId
       final userId = _auth.getCurrentUser()!.uid;
 
-      // Get Category details
-      final categoryDoc = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('categories')
-          .doc(categoryId)
-          .get();
+      Expense newExpense;
 
-      final categoryData = Category.fromDocument(categoryDoc);
+      if (categoryId == null) {
+        newExpense = Expense(
+          id: '',
+          name: name,
+          desc: desc,
+          amount: amount,
+          categoryId: null,
+          categoryName: null,
+          categoryColor: null,
+          type: type,
+          datetime: datetime,
+        );
+      } else {
+        // Get Category details
+        final categoryDoc = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('categories')
+            .doc(categoryId)
+            .get();
 
-      // Create new Expense
-      Expense newExpense = Expense(
-        id: '',
-        name: name,
-        desc: desc,
-        amount: amount,
-        categoryId: categoryId,
-        categoryName: categoryData.name,
-        categoryColor: categoryData.color,
-        type: type,
-        datetime: DateTime.now(),
-      );
+        final categoryData = Category.fromDocument(categoryDoc);
+
+        // Create new Expense
+        newExpense = Expense(
+          id: '',
+          name: name,
+          desc: desc,
+          amount: amount,
+          categoryId: categoryId,
+          categoryName: categoryData.name,
+          categoryColor: categoryData.color,
+          type: type,
+          datetime: datetime,
+        );
+      }
 
       // Add the expense to the firestore
       await _firestore
@@ -61,7 +78,7 @@ class DatabaseService {
 
     // Catch the error
     catch (e) {
-      print(e);
+      print('addExpenseInFirestore :=> \n$e');
     }
   }
 
@@ -84,7 +101,7 @@ class DatabaseService {
 
     // Return empty list
     catch (e) {
-      print(e);
+      print('fetchAllExpensesFromFirestore :=> \n$e');
       return [];
     }
   }
@@ -123,7 +140,7 @@ class DatabaseService {
 
     // Catch error
     catch (e) {
-      print(e);
+      print('changeCategoryInFirestore :=> \n$e');
     }
   }
 
@@ -131,7 +148,7 @@ class DatabaseService {
   Future<void> editExpenseInFirestore(
     String expenseId,
     String name,
-    String amount,
+    double amount,
     String desc,
     ExpenseType type,
   ) async {
@@ -150,14 +167,14 @@ class DatabaseService {
           'name': name,
           'amount': amount,
           'desc': desc,
-          'type': type,
+          'type': type.toString(),
         },
       );
     }
 
     // Catch error
     catch (e) {
-      print(e);
+      print('editExpenseInFirestore :=> \n$e');
     }
   }
 
@@ -178,7 +195,7 @@ class DatabaseService {
 
     // Catch
     catch (e) {
-      print(e);
+      print('deleteExpenseInFirestore :=> \n$e');
     }
   }
 
@@ -234,7 +251,7 @@ class DatabaseService {
 
     // Return empty list on error
     catch (e) {
-      print(e);
+      print('fetchAllCategoriesFromFirestore :=> \n$e');
       return [];
     }
   }
@@ -263,7 +280,7 @@ class DatabaseService {
 
     // Catch error
     catch (e) {
-      print(e);
+      print('editCategoryInFirestore :=> \n$e');
     }
   }
 
@@ -284,7 +301,7 @@ class DatabaseService {
 
     // Catch error
     catch (e) {
-      print(e);
+      print('deleteCategoryInFirestore :=> \n$e');
     }
   }
 
@@ -318,7 +335,7 @@ class DatabaseService {
 
     // Catch error
     catch (e) {
-      print(e);
+      print('addPotInFirestore :=> \n$e');
     }
   }
 
@@ -339,7 +356,7 @@ class DatabaseService {
 
     // Return empty list on error
     catch (e) {
-      print(e);
+      print('fetchAllPotsFromFirestore :=> \n$e');
       return [];
     }
   }
@@ -370,7 +387,7 @@ class DatabaseService {
 
     // Catch error
     catch (e) {
-      print(e);
+      print('editPotInFirestore :=> \n$e');
     }
   }
 
@@ -391,7 +408,7 @@ class DatabaseService {
 
     // Catch error
     catch (e) {
-      print(e);
+      print('deletePotInFirestore :=> \n$e');
     }
   }
 }

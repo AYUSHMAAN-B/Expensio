@@ -2,11 +2,12 @@
 
 import 'package:expense_tracker/components/daily_expense_card.dart';
 import 'package:expense_tracker/components/my_drawer.dart';
-import 'package:expense_tracker/fake_data.dart';
 import 'package:expense_tracker/models/expense.dart';
+import 'package:expense_tracker/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,10 +29,26 @@ class _HomePageState extends State<HomePage>
   final amountController = TextEditingController();
   final descController = TextEditingController();
 
+  // Selected Expense
+  String? selectedExpenseId;
+
+  // Selected Expense Type
+  ExpenseType selectedExpenseType = ExpenseType.Expense;
+
+  // Providers
+  late final listeningProvider = Provider.of<DatabaseProvider>(context);
+  late final databaseProvider =
+      Provider.of<DatabaseProvider>(context, listen: false);
+
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
+    fetchExpenses();
+  }
+
+  Future<void> fetchExpenses() async {
+    await databaseProvider.fetchExpenses();
   }
 
   bool isSameDate(DateTime date1, DateTime date2) {
@@ -41,14 +58,20 @@ class _HomePageState extends State<HomePage>
   }
 
   // Add Expense Dialog
-  void addExpense() {
+  void addExpenseDialog({bool edit = false}) {
+    if (edit == true) {
+      final expense = databaseProvider.getExpenseById(selectedExpenseId!);
+
+      nameController.text = expense.name;
+      amountController.text = expense.amount.toString();
+      descController.text = expense.desc;
+      selectedExpenseType = expense.type;
+    }
+
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       builder: (context) {
-        // Selected Expense Type
-        ExpenseType type = ExpenseType.Expense;
-
         return StatefulBuilder(
           builder: (context, setModalState) {
             return SafeArea(
@@ -69,13 +92,14 @@ class _HomePageState extends State<HomePage>
                               onTap: () {
                                 setModalState(() {
                                   // Updates only modal state
-                                  type = ExpenseType.Income;
+                                  selectedExpenseType = ExpenseType.Income;
                                 });
                               },
                               child: Container(
                                 height: 35,
                                 decoration: BoxDecoration(
-                                  color: (type == ExpenseType.Income)
+                                  color: (selectedExpenseType ==
+                                          ExpenseType.Income)
                                       ? Theme.of(context).colorScheme.secondary
                                       : Theme.of(context).colorScheme.surface,
                                   border: Border.all(
@@ -97,13 +121,14 @@ class _HomePageState extends State<HomePage>
                             child: GestureDetector(
                               onTap: () {
                                 setModalState(() {
-                                  type = ExpenseType.Expense;
+                                  selectedExpenseType = ExpenseType.Expense;
                                 });
                               },
                               child: Container(
                                 height: 35,
                                 decoration: BoxDecoration(
-                                  color: (type == ExpenseType.Expense)
+                                  color: (selectedExpenseType ==
+                                          ExpenseType.Expense)
                                       ? Theme.of(context).colorScheme.secondary
                                       : Theme.of(context).colorScheme.surface,
                                   border: Border(
@@ -186,7 +211,7 @@ class _HomePageState extends State<HomePage>
                                             .inversePrimary)),
                               ),
                               child: TextField(
-                                controller: nameController,
+                                controller: amountController,
                                 decoration: InputDecoration(
                                   hintText: 'Amount',
                                   hintStyle: TextStyle(
@@ -240,7 +265,37 @@ class _HomePageState extends State<HomePage>
                               color: Colors.green, shape: BoxShape.circle),
                           child: IconButton(
                             onPressed: () {
+                              // Pop the bottom sheet
                               Navigator.of(context).pop();
+
+                              if (edit == true) {
+                                // Add the expense in db
+                                databaseProvider.editExpense(
+                                  selectedExpenseId!,
+                                  nameController.text,
+                                  double.parse(amountController.text),
+                                  descController.text,
+                                  selectedExpenseType,
+                                );
+
+                                // Revert the selected to null
+                                selectedExpenseId = null;
+                              } else {
+                                // Add the expense in db
+                                databaseProvider.addExpense(
+                                  nameController.text,
+                                  descController.text,
+                                  double.parse(amountController.text),
+                                  selectedExpenseType,
+                                  null,
+                                  selectedDate,
+                                );
+                              }
+
+                              // Clear the controllers
+                              nameController.clear();
+                              amountController.clear();
+                              descController.clear();
                             },
                             icon: Icon(
                               Icons.done,
@@ -261,6 +316,48 @@ class _HomePageState extends State<HomePage>
         );
       },
     );
+  }
+
+  // Delete Expense Dialog
+  void deleteDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Delete This Record?'),
+            content: Text('Are you sure you want to delete?'),
+            actions: [
+              // Cancel
+              MaterialButton(
+                onPressed: () async {
+                  // Pop the dialog
+                  Navigator.of(context).pop();
+
+                  // Revert the selection
+                  setState(() {
+                    selectedExpenseId = null;
+                  });
+                },
+                child: Text('Cancel'),
+              ),
+
+              // Yes
+              MaterialButton(
+                onPressed: () async {
+                  // Pop the dialog
+                  Navigator.of(context).pop();
+
+                  // Delete the expense
+                  await databaseProvider.deleteExpense(selectedExpenseId!);
+
+                  // Revert the selection
+                  selectedExpenseId = null;
+                },
+                child: Text('Yes'),
+              ),
+            ],
+          );
+        });
   }
 
   // To Select Date
@@ -313,14 +410,41 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    final allExpenses = listeningProvider.allExpenses;
+
     return Scaffold(
       // Background Color
       backgroundColor: Theme.of(context).colorScheme.surface,
 
       // App Bar
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: Text('E X P E N S I O'),
         centerTitle: true,
+        actions: [
+          if (selectedExpenseId != null) ...[
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.category,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            IconButton(
+              onPressed: () => addExpenseDialog(edit: true),
+              icon: Icon(
+                Icons.edit,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            IconButton(
+              onPressed: () => deleteDialog(),
+              icon: Icon(
+                Icons.delete,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ],
+        ],
       ),
 
       // Drawer
@@ -328,7 +452,7 @@ class _HomePageState extends State<HomePage>
 
       // FAB
       floatingActionButton: FloatingActionButton(
-        onPressed: () => addExpense(),
+        onPressed: () => addExpenseDialog(),
         child: Icon(Icons.add),
       ),
 
@@ -381,13 +505,13 @@ class _HomePageState extends State<HomePage>
                 controller: tabController,
                 children: [
                   // Daily Expenses
-                  widgetDailyExpenses(),
+                  widgetDailyExpenses(allExpenses),
 
                   // Monthly Expenses
-                  widgetMontlyExpenses(),
+                  widgetMontlyExpenses(allExpenses),
 
                   // Yearly Expenses
-                  widgetYearlyExpenses(),
+                  widgetYearlyExpenses(allExpenses),
                 ],
               ),
             ),
@@ -398,24 +522,26 @@ class _HomePageState extends State<HomePage>
   }
 
   // Widget For Daily Expenses
-  Widget widgetDailyExpenses() {
+  Widget widgetDailyExpenses(List<Expense> allExpenses) {
     // Incomes
-    final incomes = dummyExpenses
+    final incomes = allExpenses
         .where((expense) =>
             (expense.type == ExpenseType.Income) &&
             isSameDate(expense.datetime, selectedDate))
         .toList();
 
-    final totalIncomeForTheDay = incomes.fold(0.0, (sum, expense) => sum + expense.amount);
+    final totalIncomeForTheDay =
+        incomes.fold(0.0, (sum, expense) => sum + expense.amount);
 
     // Expenses
-    final expenses = dummyExpenses
+    final expenses = allExpenses
         .where((expense) =>
             (expense.type == ExpenseType.Expense) &&
             isSameDate(expense.datetime, selectedDate))
         .toList();
 
-    final totalExpenseForTheDay = expenses.fold(0.0, (sum, expense) => sum + expense.amount);
+    final totalExpenseForTheDay =
+        expenses.fold(0.0, (sum, expense) => sum + expense.amount);
 
     // Get Day, Month, and Year
     String day = selectedDate.day.toString();
@@ -575,9 +701,23 @@ class _HomePageState extends State<HomePage>
                   ? const EdgeInsets.only(bottom: 4.0)
                   : const EdgeInsets.all(0.0),
               child: DailyExpenseCard(
+                id: income.id,
                 category: income.categoryName,
                 name: income.name,
                 amount: income.amount,
+                onTap: () {
+                  setState(() {
+                    selectedExpenseId = null;
+                    print('Tapped and $selectedExpenseId');
+                  });
+                },
+                onLongPress: () {
+                  setState(() {
+                    selectedExpenseId = income.id;
+                    print('Long Pressed and $selectedExpenseId');
+                  });
+                },
+                selectedExpenseId: selectedExpenseId,
               ),
             );
           },
@@ -632,9 +772,23 @@ class _HomePageState extends State<HomePage>
           itemBuilder: (context, index) {
             final expense = expenses[index];
             return DailyExpenseCard(
+              id: expense.id,
               category: expense.categoryName,
               name: expense.name,
               amount: expense.amount,
+              onTap: () {
+                setState(() {
+                  selectedExpenseId = null;
+                  print('Tapped and $selectedExpenseId');
+                });
+              },
+              onLongPress: () {
+                setState(() {
+                  selectedExpenseId = expense.id;
+                  print('Long Pressed and $selectedExpenseId');
+                });
+              },
+              selectedExpenseId: selectedExpenseId,
             );
           },
         ),
@@ -643,13 +797,13 @@ class _HomePageState extends State<HomePage>
   }
 
   // Widget For MOnthly Expenses
-  Widget widgetMontlyExpenses() {
+  Widget widgetMontlyExpenses(List<Expense> allExpenses) {
     // Get Month, and Year
     String month = DateFormat('MMMM').format(selectedDate);
     String year = selectedDate.year.toString();
 
     // // Previous Month Expenses
-    // List<Expense> previousMonthExpenses = dummyExpenses.where((expense) {
+    // List<Expense> previousMonthExpenses = allExpenses.where((expense) {
     //   if (selectedDate.month == 1) {
     //     return expense.datetime.year == selectedDate.year - 1 &&
     //         expense.datetime.month == 12;
@@ -671,7 +825,7 @@ class _HomePageState extends State<HomePage>
     // final carryForward = previousTotalMonthIncome - previousTotalMonthExpense;
 
     // Current Month Expenses
-    List<Expense> currentMonthExpenses = dummyExpenses
+    List<Expense> currentMonthExpenses = allExpenses
         .where((expense) =>
             expense.datetime.year == selectedDate.year &&
             expense.datetime.month == selectedDate.month)
@@ -913,7 +1067,7 @@ class _HomePageState extends State<HomePage>
   }
 
   // Widget For Yearly Expenses
-  Widget widgetYearlyExpenses() {
+  Widget widgetYearlyExpenses(List<Expense> allExpenses) {
     // Get Year
     String year = selectedDate.year.toString();
 
@@ -932,7 +1086,7 @@ class _HomePageState extends State<HomePage>
       'Dec',
     ];
 
-    List<Expense> filteredExpenses = dummyExpenses
+    List<Expense> filteredExpenses = allExpenses
         .where((expense) => expense.datetime.year == selectedDate.year)
         .toList();
 

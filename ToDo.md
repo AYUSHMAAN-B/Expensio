@@ -11,9 +11,15 @@
 
 ## ✔ **NOW WORKING ON**
 
-- [ ] Creating models for UserProfile, Expense and Post.
-- [ ] Creating screens and bottom navigation bar.
+- [✔] Creating models for UserProfile, Expense and Post.
+- [✔] Creating screens and bottom navigation bar.
 - [ ] Creating UI components for all screens.
+  - [✔] Creating UI components for Daily Expenses.
+  - [✔] Creating UI components for Monthly Expenses.
+  - [✔] Creating UI components for Yearly Expenses.
+  - [ ] Creating UI components for Pots Screen.
+  - [ ] Creating UI components for Stats Screen.
+  - [ ] Creating UI components for Profile Screen.
 - [ ] Writing Firestore functions for the database.
 
 ---
@@ -21,7 +27,7 @@
 ## ✔ **Step 1: Plan & Define Features**
 
 - [✔] User authentication (Login, Signup)
-- [ ] Expense tracking (Add, Edit, Delete expenses)
+- [✔] Expense tracking (Add, Edit, Delete expenses)
 - [ ] Categorization of expenses
 - [ ] Savings pots for big purchases
 - [ ] Budgeting & spending insights
@@ -33,12 +39,12 @@
 
 ## [-] **Step 2: Design Database Schema (Firestore)**
 
-- [ ] Define collections and documents
+- [✔] Define collections and documents
 - [ ] Implement Firestore structure in the app
-  - [ ] `users` collection (stores user details)
-  - [ ] `expenses` collection (stores expenses per user)
-  - [ ] `categories` collection (stores expense categories)
-  - [ ] `pots` collection (tracks user savings goals)
+  - [✔] `users` collection (stores user details)
+  - [✔] `expenses` collection (stores expenses per user)
+  - [✔] `categories` collection (stores expense categories)
+  - [✔] `pots` collection (tracks user savings goals)
   - [ ] `budgets` collection (tracks monthly budgets)
   - [ ] `recurringTransactions` collection (stores recurring payments)
   - [ ] `notifications` collection (stores reminders & alerts)
@@ -88,33 +94,33 @@
 
 ### [ ] Implement User Authentication
 
-- [ ] Sign up users with email/password
-- [ ] Login users securely
-- [ ] Logout functionality
+- [✔] Sign up users with email/password
+- [✔] Login users securely
+- [✔] Logout functionality
 - [ ] Reset password feature
 
 ### [ ] Implement Firestore Functions
 
 #### **User Management**
 
-- [ ] Store user data in Firestore (`users/{userId}`)
+- [✔] Store user data in Firestore (`users/{userId}`)
 - [ ] Update user profile details
 - [ ] Fetch user settings from Firestore
 
 #### **Expense Management**
 
-- [ ] Add a new expense (`users/{userId}/expenses/{expenseId}`)
-- [ ] Edit an existing expense
-- [ ] Delete an expense
+- [✔] Add a new expense (`users/{userId}/expenses/{expenseId}`)
+- [✔] Edit an existing expense
+- [✔] Delete an expense
 - [ ] Fetch expenses by date range
 - [ ] Filter expenses by category
 - [ ] Get total spending for a given period
 
 #### **Category Management**
 
-- [ ] Create custom categories (`users/{userId}/categories/{categoryId}`)
-- [ ] Fetch all categories for a user
-- [ ] Edit/Delete a category
+- [✔] Create custom categories (`users/{userId}/categories/{categoryId}`)
+- [✔] Fetch all categories for a user
+- [✔] Edit/Delete a category
 
 #### **Budget Management**
 
@@ -124,9 +130,9 @@
 
 #### **Savings Pots**
 
-- [ ] Create a new savings pot (`users/{userId}/savingsPots/{potId}`)
-- [ ] Update savings progress
-- [ ] Delete a savings pot
+- [✔] Create a new savings pot (`users/{userId}/savingsPots/{potId}`)
+- [✔] Update savings progress
+- [✔] Delete a savings pot
 
 #### **Recurring Transactions**
 
