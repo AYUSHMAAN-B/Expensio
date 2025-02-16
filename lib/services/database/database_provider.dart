@@ -40,6 +40,25 @@ class DatabaseProvider extends ChangeNotifier {
     String? categoryId,
     DateTime datetime,
   ) async {
+    // Create new Expense
+    Expense newExpense = Expense(
+      id: '',
+      name: name,
+      desc: desc,
+      amount: amount,
+      categoryId: categoryId,
+      categoryName: null,
+      categoryColor: null,
+      type: type,
+      datetime: datetime,
+    );
+
+    // Add to local storage
+    _allExpenses.add(newExpense);
+
+    // Update UI
+    notifyListeners();
+
     // Add Expense in Firestore
     await _db.addExpenseInFirestore(
         name, desc, amount, type, categoryId, datetime);

@@ -44,6 +44,7 @@ dependencies:
   intl: ^0.20.2
   popover: ^0.3.1
   month_picker_dialog: ^6.0.3
+  curved_labeled_navigation_bar: ^2.0.6
 
 dev_dependencies:
   flutter_test:

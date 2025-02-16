@@ -16,3 +16,4 @@
     [x] Wrote basic CRUD functions for Firestore
     [x] Initialized Local Storage for better UI reflection
     [x] Done with backend for CRUD Expenses
+    [x] Added Bottom Navigation Bar

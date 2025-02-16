@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'package:expense_tracker/components/daily_expense_card.dart';
 import 'package:expense_tracker/components/my_drawer.dart';
@@ -456,29 +456,48 @@ class _HomePageState extends State<HomePage>
         child: Icon(Icons.add),
       ),
 
-      // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).colorScheme.tertiary,
-        items: [
-          // Home
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'HOME',
-          ),
-
-          // Pots
-          BottomNavigationBarItem(
-            icon: Icon(Icons.monetization_on),
-            label: 'POTS',
-          ),
-
-          // Stats
-          BottomNavigationBarItem(
-            icon: Icon(Icons.auto_graph),
-            label: 'STATS',
-          ),
-        ],
-      ),
+      // // Bottom Navigation Bar
+      // bottomNavigationBar: CurvedNavigationBar(
+      //   backgroundColor: Theme.of(context).colorScheme.surface,
+      //   buttonBackgroundColor: Theme.of(context).colorScheme.tertiary,
+      //   animationDuration: Duration(milliseconds: 250),
+      //   color: Theme.of(context).colorScheme.primary,
+      //   onTap: (index) {
+      //     if (index == 0) {
+      //       Navigator.of(context)
+      //           .push(MaterialPageRoute(builder: (context) => HomePage()));
+      //     } else if (index == 1) {
+      //       Navigator.of(context)
+      //           .push(MaterialPageRoute(builder: (context) => PotsPage()));
+      //     } else if (index == 2) {
+      //       Navigator.of(context)
+      //           .push(MaterialPageRoute(builder: (context) => StatsPage()));
+      //     }
+      //   },
+      //   items: [
+      //     CurvedNavigationBarItem(
+      //       child: Icon(Icons.home_outlined),
+      //       label: 'Home',
+      //       labelStyle: TextStyle(
+      //         color: Theme.of(context).colorScheme.tertiary,
+      //       ),
+      //     ),
+      //     CurvedNavigationBarItem(
+      //       child: Icon(Icons.savings),
+      //       label: 'Pots',
+      //       labelStyle: TextStyle(
+      //         color: Theme.of(context).colorScheme.tertiary,
+      //       ),
+      //     ),
+      //     CurvedNavigationBarItem(
+      //       child: Icon(Icons.stacked_line_chart_rounded),
+      //       label: 'Stats',
+      //       labelStyle: TextStyle(
+      //         color: Theme.of(context).colorScheme.tertiary,
+      //       ),
+      //     ),
+      //   ],
+      // ),
 
       // Body
       body: SafeArea(
