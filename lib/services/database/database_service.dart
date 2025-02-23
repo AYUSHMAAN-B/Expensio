@@ -333,6 +333,7 @@ class DatabaseService {
         name: name,
         goal: goal,
         sofar: 0.0,
+        iconPath: null,
       );
 
       // Add Pot to firestore

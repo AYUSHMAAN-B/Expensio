@@ -59,6 +59,7 @@ dependencies:
   curved_labeled_navigation_bar: ^2.0.6
   flutter_colorpicker: ^1.1.0
   flutter_slidable: ^4.0.0
+  percent_indicator: ^4.2.4
 
 dev_dependencies:
   flutter_test:
@@ -85,8 +86,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/intro.json
-    - assets/google.png
+    - assets/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

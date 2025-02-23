@@ -5,12 +5,14 @@ class Pot {
   final String name;
   final double goal;
   final double sofar;
+  final String? iconPath;
 
   Pot({
     required this.id,
     required this.name,
     required this.goal,
     required this.sofar,
+    required this.iconPath,
   });
 
   factory Pot.fromDocument(DocumentSnapshot doc) {
@@ -19,6 +21,7 @@ class Pot {
       name: doc['name'],
       goal: doc['goal'] as double,
       sofar: doc['sofar'] as double,
+      iconPath: doc['imagePath'],
     );
   }
 
@@ -28,6 +31,7 @@ class Pot {
       'name': name,
       'goal': goal,
       'sofar': sofar,
+      'imagePath': iconPath,
     };
   }
 }
