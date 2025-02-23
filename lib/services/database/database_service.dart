@@ -322,7 +322,8 @@ class DatabaseService {
   */
 
   // Add Pot
-  Future<void> addPotInFirestore(String name, double goal) async {
+  Future<void> addPotInFirestore(
+      String name, double goal, String iconPath) async {
     try {
       // Get useId
       final userId = _auth.getCurrentUser()!.uid;
@@ -333,7 +334,7 @@ class DatabaseService {
         name: name,
         goal: goal,
         sofar: 0.0,
-        iconPath: null,
+        iconPath: iconPath,
       );
 
       // Add Pot to firestore
@@ -377,7 +378,7 @@ class DatabaseService {
     String potId,
     String name,
     double goal,
-    double sofar,
+    String iconPath,
   ) async {
     try {
       // Get useId
@@ -392,13 +393,38 @@ class DatabaseService {
           .update({
         'name': name,
         'goal': goal,
-        'sofar': sofar,
+        'iconPath': iconPath,
       });
     }
 
     // Catch error
     catch (e) {
       print('editPotInFirestore :=> \n$e');
+    }
+  }
+
+  // Edit SoFar In Pot
+  Future<void> editSoFarInPotInFirestore(String potId, double sofar) async {
+    try {
+      // Get useId
+      final userId = _auth.getCurrentUser()!.uid;
+
+      // Edit Pot in firestore
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('pots')
+          .doc(potId)
+          .update({
+        'sofar': sofar,
+      });
+
+      print('Completed $sofar');
+    }
+
+    // Catch error
+    catch (e) {
+      print('editSoFarInPotInFirestore :=> \n$e');
     }
   }
 

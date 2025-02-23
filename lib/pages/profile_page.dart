@@ -143,32 +143,33 @@ class _ProfilePageState extends State<ProfilePage> {
   // Delete Category Dialog
   void showDeleteDialog({required String categoryId}) {
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Do you want to delete this category ?'),
-            actions: [
-              // Cancel
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('No'),
-              ),
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Do you want to delete this category ?'),
+          actions: [
+            // Cancel
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('No'),
+            ),
 
-              // Add
-              TextButton(
-                onPressed: () async {
-                  // Pop the dialog
-                  if (mounted) Navigator.of(context).pop();
+            // Add
+            TextButton(
+              onPressed: () async {
+                // Pop the dialog
+                if (mounted) Navigator.of(context).pop();
 
-                  await databaseProvider.deleteCategory(categoryId);
-                },
-                child: Text('Yes'),
-              ),
-            ],
-          );
-        });
+                await databaseProvider.deleteCategory(categoryId);
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -347,7 +348,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             // Pre fill the name and color
                             categoryController.text = category.name;
                             selectedColor = category.color;
-                  
+
                             // showDialog
                             showCategoryDailog(
                               edit: true,
@@ -373,10 +374,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     child: Container(
                       height: 50,
-                      margin: EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 4.0),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.tertiary,
                         borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -398,14 +399,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                 category.name[0],
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color:
-                                      Theme.of(context).colorScheme.tertiary,
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
                               ),
                             ),
                           ),
                           const SizedBox(width: 16),
-                  
+
                           // Category Name
                           Text(category.name)
                         ],

@@ -2,7 +2,6 @@ import 'package:expense_tracker/components/my_text_field.dart';
 import 'package:expense_tracker/components/pot_card.dart';
 import 'package:expense_tracker/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 class PotsPage extends StatefulWidget {
@@ -16,17 +15,32 @@ class _PotsPageState extends State<PotsPage> {
   // Controller
   final nameController = TextEditingController();
   final goalController = TextEditingController();
+  final sofarController = TextEditingController();
 
   // Providers
   late final listeningProvider = Provider.of<DatabaseProvider>(context);
   late final databaseProvider =
       Provider.of<DatabaseProvider>(context, listen: false);
 
-  // SelectedIcon
+  // Selected Icon
   String? selectedIconPath;
 
+  // Selected type
+  int selectedType = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    loadPots();
+  }
+
+  // Fetch All Pots
+  void loadPots() async {
+    await databaseProvider.fetchPots();
+  }
+
   // Add / Edit Pot Dialog
-  void showPotDialog() {
+  void showPotDialog({bool edit = false, String? potId}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -81,23 +95,52 @@ class _PotsPageState extends State<PotsPage> {
                 // Cancel
                 MaterialButton(
                   onPressed: () {
+                    // Pop the dialog
+                    Navigator.of(context).pop();
+
+                    // Clear the controllers
                     nameController.clear();
                     goalController.clear();
+
+                    // Revert the iconPath
                     selectedIconPath = null;
-                    Navigator.of(context).pop();
                   },
                   child: Text('Cancel'),
                 ),
 
                 // Add
                 MaterialButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    // Pop the dialog
                     if (mounted) Navigator.of(context).pop();
+
+                    if (edit) {
+                      // Edit the pot in firestore
+                      await databaseProvider.editPot(
+                        potId!,
+                        nameController.text,
+                        double.parse(goalController.text),
+                        selectedIconPath ?? '',
+                      );
+
+                      print('Edited');
+                    } else {
+                      // Add the pot in firestore
+                      await databaseProvider.addPot(
+                        nameController.text,
+                        double.parse(goalController.text),
+                        selectedIconPath ?? '',
+                      );
+                    }
+
+                    // Clear the controllers
                     nameController.clear();
                     goalController.clear();
+
+                    // Revert the iconPath
                     selectedIconPath = null;
                   },
-                  child: Text('Add'),
+                  child: edit ? Text('Save') : Text('Add'),
                 ),
               ],
             );
@@ -175,6 +218,183 @@ class _PotsPageState extends State<PotsPage> {
     );
   }
 
+  // Delete Pot Dialog
+  void showDeleteDialog({required String potId}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Do you want to delete this pot ?'),
+          actions: [
+            // Cancel
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('No'),
+            ),
+
+            // Add
+            TextButton(
+              onPressed: () async {
+                // Pop the dialog
+                if (mounted) Navigator.of(context).pop();
+
+                // Delete the pot in firestore
+                await databaseProvider.deletePot(potId);
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Edit SoFar Dialog
+  void editSoFarDialog(String potId, double sofar, double goal) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Add / Take Out
+                  Padding(
+                    padding: const EdgeInsets.all(22.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Income Box
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setModalState(() {
+                                selectedType = 1;
+                              });
+                            },
+                            child: Container(
+                              height: 35,
+                              decoration: BoxDecoration(
+                                color: (selectedType == 1)
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : Theme.of(context).colorScheme.surface,
+                                border: Border.all(
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
+                                borderRadius: BorderRadius.horizontal(
+                                    left: Radius.circular(16)),
+                              ),
+                              child: Center(
+                                child: Text('Add'),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Expense Box
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setModalState(() {
+                                selectedType = 0;
+                              });
+                            },
+                            child: Container(
+                              height: 35,
+                              decoration: BoxDecoration(
+                                color: (selectedType == 0)
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : Theme.of(context).colorScheme.surface,
+                                border: Border(
+                                  top: BorderSide(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  bottom: BorderSide(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  right: BorderSide(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                ),
+                                borderRadius: BorderRadius.horizontal(
+                                    right: Radius.circular(16)),
+                              ),
+                              child: Center(
+                                child: Text('Take Out'),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Amount TextField
+                  Row(
+                    children: [
+                      Expanded(
+                        child: MyTextField(
+                          controller: sofarController,
+                          icon: null,
+                          hintText: 'How Much?',
+                          obscureText: false,
+                          textInputType: TextInputType.numberWithOptions(),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        ' / ${goal - sofar}',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              actions: [
+                // Cancel
+                MaterialButton(
+                  onPressed: () {
+                    // Clear the controller
+                    sofarController.clear();
+
+                    // Pop the dialog
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel'),
+                ),
+
+                // Save
+                MaterialButton(
+                  onPressed: () async {
+                    // Pop the dialog
+                    if (mounted) Navigator.of(context).pop();
+
+                    // Update the pot in firestore
+                    await databaseProvider.editSoFarInPot(
+                        potId, sofar + double.parse(sofarController.text));
+
+                    // Clear the controller
+                    sofarController.clear();
+                  },
+                  child: Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get All Pots
@@ -202,97 +422,27 @@ class _PotsPageState extends State<PotsPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              height: 75,
-              margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
-              padding: EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary.withAlpha(100),
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Icon
-                  Container(
-                    padding: EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.tertiary,
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                    child: Image.asset('assets/investment.png'),
-                  ),
-
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Name
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0),
-                          child: Text(
-                            'Bajaj 4S',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-
-                        // Progress Bar
-                        LinearPercentIndicator(
-                          width: MediaQuery.of(context).size.width * 0.58,
-                          lineHeight: 8.0,
-                          percent: 0.69,
-                          barRadius: Radius.circular(12),
-                          progressColor: Theme.of(context).colorScheme.tertiary,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Name
-                      Text(
-                        '₹ 25,000',
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-
-                      SizedBox(
-                        width: 60,
-                        child: Divider(
-                          thickness: 2,
-                          color: const Color.fromARGB(255, 7, 106, 84),
-                        ),
-                      ),
-
-                      // Progress Bar
-                      Text(
-                        '₹ 50,000',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
             // List<Pots>
             ListView.builder(
               shrinkWrap: true,
               itemCount: pots.length,
               itemBuilder: (context, index) {
-                return PotCard(pot: pots[index]);
+                final pot = pots[index];
+
+                return PotCard(
+                  pot: pot,
+                  onEditPressed: () {
+                    // Prefill the controllers
+                    nameController.text = pot.name;
+                    goalController.text = pot.goal.toString();
+                    selectedIconPath = pot.iconPath;
+
+                    // Open the dialog
+                    showPotDialog(edit: true, potId: pot.id);
+                  },
+                  onDeletePressed: () => showDeleteDialog(potId: pot.id),
+                  onTapped: () => editSoFarDialog(pot.id, pot.sofar, pot.goal),
+                );
               },
             )
           ],

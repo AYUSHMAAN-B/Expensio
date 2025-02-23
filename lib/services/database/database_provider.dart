@@ -302,9 +302,9 @@ class DatabaseProvider extends ChangeNotifier {
   List<Pot> get allPots => _allPots;
 
   // Add Pot
-  Future<void> addPot(String name, double goal) async {
+  Future<void> addPot(String name, double goal, String iconPath) async {
     // Add Pot In Firestore
-    await _db.addPotInFirestore(name, goal);
+    await _db.addPotInFirestore(name, goal, iconPath);
 
     // Update Local Storage
     await fetchPots();
@@ -315,10 +315,19 @@ class DatabaseProvider extends ChangeNotifier {
     String potId,
     String name,
     double goal,
-    double sofar,
+    String iconPath,
   ) async {
     // Edit Pot In Firestore
-    await _db.editPotInFirestore(potId, name, goal, sofar);
+    await _db.editPotInFirestore(potId, name, goal, iconPath);
+
+    // Update Local Storage
+    await fetchPots();
+  }
+
+  // Edit SoFar In Pot
+  Future<void> editSoFarInPot(String potId, double sofar) async {
+    // Edit SoFar In Pot In Firestore
+    await _db.editSoFarInPotInFirestore(potId, sofar);
 
     // Update Local Storage
     await fetchPots();
