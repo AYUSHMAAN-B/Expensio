@@ -8,9 +8,9 @@ class Expense {
   final String name;
   final String desc;
   final double amount;
-  final String? categoryId;
-  final String? categoryName;
-  final Color? categoryColor;
+  String? categoryId;
+  String? categoryName;
+  Color? categoryColor;
   final ExpenseType type;
   final DateTime datetime;
 
@@ -27,6 +27,8 @@ class Expense {
   });
 
   factory Expense.fromDocument(DocumentSnapshot doc) {
+    Map<String, dynamic>? colorData = doc['categoryColor'];
+
     return Expense(
       id: doc.id,
       name: doc['name'],
@@ -34,7 +36,14 @@ class Expense {
       amount: doc['amount'],
       categoryId: doc['categoryId'],
       categoryName: doc['categoryName'],
-      categoryColor: doc['categoryColor'],
+      categoryColor: colorData != null
+          ? Color.fromARGB(
+              (colorData['a'] as num).toInt(),
+              (colorData['r'] as num).toInt(),
+              (colorData['g'] as num).toInt(),
+              (colorData['b'] as num).toInt(),
+            )
+          : null,
       type: ExpenseType.values.firstWhere((e) => e.toString() == doc['type']),
       datetime: (doc['datetime'] as Timestamp).toDate(),
     );
@@ -48,7 +57,14 @@ class Expense {
       'amount': amount,
       'categoryId': categoryId,
       'categoryName': categoryName,
-      'categoryColor': categoryColor,
+      'categoryColor': categoryColor != null
+          ? {
+              'a': (categoryColor!.a * 255).toInt(),
+              'r': (categoryColor!.r * 255).toInt(),
+              'g': (categoryColor!.g * 255).toInt(),
+              'b': (categoryColor!.b * 255).toInt(),
+            }
+          : null,
       'type': type.toString(),
       'datetime': datetime,
     };

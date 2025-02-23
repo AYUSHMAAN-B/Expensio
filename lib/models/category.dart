@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Category {
   final String id;
   final String name;
-  final Color? color;
+  final Color color;
 
   Category({
     required this.id,
@@ -14,10 +14,17 @@ class Category {
   });
 
   factory Category.fromDocument(DocumentSnapshot doc) {
+    Map<String, dynamic> colorData = doc['color'];
+
     return Category(
       id: doc.id,
       name: doc['name'],
-      color: doc['color'],
+      color: Color.fromARGB(
+        (colorData['a'] as num).toInt(),
+        (colorData['r'] as num).toInt(),
+        (colorData['g'] as num).toInt(),
+        (colorData['b'] as num).toInt(),
+      ),
     );
   }
 
@@ -25,7 +32,12 @@ class Category {
     return {
       'id': id,
       'name': name,
-      'color': color,
+      'color': {
+        'a': (color.a * 255).toInt(),
+        'r': (color.r * 255).toInt(),
+        'g': (color.g * 255).toInt(),
+        'b': (color.b * 255).toInt(),
+      },
     };
   }
 }

@@ -319,7 +319,7 @@ class _HomePageState extends State<HomePage>
   }
 
   // Delete Expense Dialog
-  void deleteDialog() {
+  void deleteExpenseDialog() {
     showDialog(
         context: context,
         builder: (context) {
@@ -358,6 +358,48 @@ class _HomePageState extends State<HomePage>
             ],
           );
         });
+  }
+
+  // Expense Category Dialog
+  void expenseCategoryDialog() {
+    final categories = listeningProvider.allCategories;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Choose the category'),
+          content: Wrap(
+            children: categories.map(
+              (category) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: GestureDetector(
+                    onTap: () async {
+                      // Pop the dialog
+                      Navigator.of(context).pop();
+
+                      final expenseId = selectedExpenseId!;
+
+                      // Revert the selection
+                      selectedExpenseId = null;
+
+                      // Change Expense Category
+                      await databaseProvider.changeExpenseCategory(
+                          expenseId, category.id);
+                    },
+                    child: Chip(
+                      label: Text(category.name),
+                      backgroundColor: category.color,
+                    ),
+                  ),
+                );
+              },
+            ).toList(),
+          ),
+        );
+      },
+    );
   }
 
   // To Select Date
@@ -423,7 +465,7 @@ class _HomePageState extends State<HomePage>
         actions: [
           if (selectedExpenseId != null) ...[
             IconButton(
-              onPressed: () {},
+              onPressed: () => expenseCategoryDialog(),
               icon: Icon(
                 Icons.category,
                 color: Theme.of(context).colorScheme.primary,
@@ -437,7 +479,7 @@ class _HomePageState extends State<HomePage>
               ),
             ),
             IconButton(
-              onPressed: () => deleteDialog(),
+              onPressed: () => deleteExpenseDialog(),
               icon: Icon(
                 Icons.delete,
                 color: Theme.of(context).colorScheme.primary,
@@ -727,13 +769,11 @@ class _HomePageState extends State<HomePage>
                 onTap: () {
                   setState(() {
                     selectedExpenseId = null;
-                    print('Tapped and $selectedExpenseId');
                   });
                 },
                 onLongPress: () {
                   setState(() {
                     selectedExpenseId = income.id;
-                    print('Long Pressed and $selectedExpenseId');
                   });
                 },
                 selectedExpenseId: selectedExpenseId,
@@ -798,13 +838,11 @@ class _HomePageState extends State<HomePage>
               onTap: () {
                 setState(() {
                   selectedExpenseId = null;
-                  print('Tapped and $selectedExpenseId');
                 });
               },
               onLongPress: () {
                 setState(() {
                   selectedExpenseId = expense.id;
-                  print('Long Pressed and $selectedExpenseId');
                 });
               },
               selectedExpenseId: selectedExpenseId,

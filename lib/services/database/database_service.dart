@@ -134,7 +134,12 @@ class DatabaseService {
           .update({
         'categoryId': categoryId,
         'categoryName': categoryData.name,
-        'categoryColor': categoryData.color,
+        'categoryColor': {
+          'a': (categoryData.color.a * 255).toInt(),
+          'r': (categoryData.color.r * 255).toInt(),
+          'g': (categoryData.color.g * 255).toInt(),
+          'b': (categoryData.color.b * 255).toInt(),
+        },
       });
     }
 
@@ -206,7 +211,7 @@ class DatabaseService {
   */
 
   // Add Category
-  Future<void> addCategoryInFirestore(String name, Color? color) async {
+  Future<void> addCategoryInFirestore(String name, Color color) async {
     try {
       // Get useId
       final userId = _auth.getCurrentUser()!.uid;
@@ -260,7 +265,7 @@ class DatabaseService {
   Future<void> editCategoryInFirestore(
     String categoryId,
     String name,
-    Color? color,
+    Color color,
   ) async {
     try {
       // Get useId
@@ -274,7 +279,12 @@ class DatabaseService {
           .doc(categoryId)
           .update({
         'name': name,
-        'color': color,
+        'color': {
+          'a': (color.a * 255).toInt(),
+          'r': (color.r * 255).toInt(),
+          'g': (color.g * 255).toInt(),
+          'b': (color.b * 255).toInt(),
+        },
       });
     }
 

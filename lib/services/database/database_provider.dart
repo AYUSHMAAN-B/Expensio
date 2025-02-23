@@ -14,7 +14,6 @@ class DatabaseProvider extends ChangeNotifier {
   */
 
   List<Expense> _allExpenses = [];
-
   List<Expense> get allExpenses => _allExpenses;
 
   // Fetch All Expenses
@@ -123,6 +122,28 @@ class DatabaseProvider extends ChangeNotifier {
     String expenseId,
     String categoryId,
   ) async {
+    // Find the category
+    final category =
+        _allCategories.where((category) => category.id == categoryId).first;
+
+    // Find the expense
+    final expense =
+        _allExpenses.where((expense) => expense.id == expenseId).first;
+
+    // Remove the expense
+    _allExpenses.remove(expense);
+
+    // Update the expense
+    expense.categoryId = category.id;
+    expense.categoryName = category.name;
+    expense.categoryColor = category.color;
+
+    // Add the expense
+    _allExpenses.add(expense);
+
+    // Update UI
+    notifyListeners();
+
     // Change Expense Category in Firestore
     await _db.changeCategoryInFirestore(expenseId, categoryId);
 
@@ -172,9 +193,9 @@ class DatabaseProvider extends ChangeNotifier {
   */
 
   List<Category> _allCategories = [];
-  final Map<String, Category> _expensesCategory = {};
-
   List<Category> get allCategories => _allCategories;
+
+  final Map<String, Category> _expensesCategory = {};
   Map<String, Category> get expensesCategory => _expensesCategory;
 
   // Initialize Expense Category Map
@@ -189,7 +210,20 @@ class DatabaseProvider extends ChangeNotifier {
   }
 
   // Add Category
-  Future<void> addCategory(String name, Color? color) async {
+  Future<void> addCategory(String name, Color color) async {
+    // Create a temp new Category
+    Category newCategory = Category(
+      id: '',
+      name: name,
+      color: color,
+    );
+
+    // Add to local storage
+    _allCategories.add(newCategory);
+
+    // Update UI
+    notifyListeners();
+
     // Add Category In Firestore
     await _db.addCategoryInFirestore(name, color);
 
@@ -201,8 +235,27 @@ class DatabaseProvider extends ChangeNotifier {
   Future<void> editCategory(
     String categoryId,
     String name,
-    Color? color,
+    Color color,
   ) async {
+    Category updatedCategory = Category(
+      id: categoryId,
+      name: name,
+      color: color,
+    );
+
+    // Find the current Category index
+    int index =
+        _allCategories.indexWhere((category) => category.id == categoryId);
+
+    // Remove tehe current Category
+    _allCategories.removeAt(index);
+
+    // Add the updated Category
+    _allCategories.add(updatedCategory);
+
+    // Update UI
+    notifyListeners();
+
     // Edit Category In Firestore
     await _db.editCategoryInFirestore(categoryId, name, color);
 
@@ -212,6 +265,16 @@ class DatabaseProvider extends ChangeNotifier {
 
   // Delete Category
   Future<void> deleteCategory(String categoryId) async {
+    // Find the current Category index
+    int index =
+        _allCategories.indexWhere((category) => category.id == categoryId);
+
+    // Remove tehe current Category
+    _allCategories.removeAt(index);
+
+    // Update UI
+    notifyListeners();
+
     // Delete Category In Firestore
     await _db.deleteCategoryInFirestore(categoryId);
 

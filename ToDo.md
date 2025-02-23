@@ -19,8 +19,8 @@
   - [✔] Creating UI components for Yearly Expenses.
   - [ ] Creating UI components for Pots Screen.
   - [ ] Creating UI components for Stats Screen.
-  - [ ] Creating UI components for Profile Screen.
-- [ ] Writing Firestore functions for the database.
+  - [✔] Creating UI components for Profile Screen.
+- [✔] Writing Firestore functions for the database.
 
 ---
 
@@ -28,12 +28,12 @@
 
 - [✔] User authentication (Login, Signup)
 - [✔] Expense tracking (Add, Edit, Delete expenses)
-- [ ] Categorization of expenses
+- [✔] Categorization of expenses
 - [ ] Savings pots for big purchases
 - [ ] Budgeting & spending insights
 - [ ] Recurring transactions automation
 - [ ] Export expenses as CSV/PDF
-- [ ] Cloud backup for expenses
+- [✔] Cloud backup for expenses
 
 ---
 
@@ -61,14 +61,14 @@
 
 ### [ ] Design main dashboard
 
-- [ ] Expense overview section
+- [✔] Expense overview section
 - [ ] Budget tracking section
 - [ ] Savings pots progress section
 
 ### [ ] Design expense management screens
 
-- [ ] Add new expense
-- [ ] Edit/Delete existing expenses
+- [✔] Add new expense
+- [✔] Edit/Delete existing expenses
 - [ ] Filter expenses by category, date, and payment method
 
 ### [ ] Design budget tracking UI
