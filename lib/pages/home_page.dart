@@ -21,13 +21,13 @@ class _HomePageState extends State<HomePage>
   // Tab Controller
   late final tabController;
 
-  // Date
-  DateTime selectedDate = DateTime.now();
-
   // Controllers
   final nameController = TextEditingController();
   final amountController = TextEditingController();
   final descController = TextEditingController();
+
+  // Selected Date
+  DateTime selectedDate = DateTime.now();
 
   // Selected Expense
   String? selectedExpenseId;
@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> fetchExpenses() async {
     await databaseProvider.fetchExpenses();
+    databaseProvider.initializeExpenseCategoryMap();
   }
 
   bool isSameDate(DateTime date1, DateTime date2) {

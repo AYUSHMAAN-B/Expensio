@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:expense_tracker/components/my_text_field.dart';
 import 'package:expense_tracker/components/pot_card.dart';
 import 'package:expense_tracker/services/database/database_provider.dart';
@@ -122,13 +124,11 @@ class _PotsPageState extends State<PotsPage> {
                         double.parse(goalController.text),
                         selectedIconPath ?? '',
                       );
-
-                      print('Edited');
                     } else {
                       // Add the pot in firestore
                       await databaseProvider.addPot(
                         nameController.text,
-                        double.parse(goalController.text),
+                        int.parse(goalController.text),
                         selectedIconPath ?? '',
                       );
                     }
@@ -252,7 +252,7 @@ class _PotsPageState extends State<PotsPage> {
   }
 
   // Edit SoFar Dialog
-  void editSoFarDialog(String potId, double sofar, double goal) {
+  void editSoFarDialog(String potId, int sofar, int goal) {
     showDialog(
       context: context,
       builder: (context) {
@@ -350,7 +350,9 @@ class _PotsPageState extends State<PotsPage> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        ' / ${goal - sofar}',
+                        (selectedType == 1)
+                            ? ' / ${goal - sofar}'
+                            : ' / $sofar',
                         style: TextStyle(
                           fontSize: 18,
                         ),
@@ -375,12 +377,74 @@ class _PotsPageState extends State<PotsPage> {
                 // Save
                 MaterialButton(
                   onPressed: () async {
+                    if (sofarController.text.isEmpty) {
+                      return;
+                    }
+
+                    double enteredAmount =
+                        double.tryParse(sofarController.text) ?? 0;
+
+                    if (enteredAmount <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Enter a valid amount"),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.tertiary,
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (selectedType == 1) {
+                      // Adding money
+                      if (sofar + enteredAmount > goal) {
+                        Navigator.of(context).pop();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "Can't exceed goal amount!",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.inversePrimary,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Update Firestore
+                      await databaseProvider.editSoFarInPot(
+                          potId, sofar + enteredAmount);
+                    } else {
+                      // Taking out money
+                      if (enteredAmount > sofar) {
+                        Navigator.of(context).pop();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "Can't take out more than available amount!",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.inversePrimary,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Update Firestore
+                      await databaseProvider.editSoFarInPot(
+                          potId, sofar - enteredAmount);
+                    }
+
                     // Pop the dialog
                     if (mounted) Navigator.of(context).pop();
-
-                    // Update the pot in firestore
-                    await databaseProvider.editSoFarInPot(
-                        potId, sofar + double.parse(sofarController.text));
 
                     // Clear the controller
                     sofarController.clear();
@@ -410,12 +474,6 @@ class _PotsPageState extends State<PotsPage> {
         actions: [
           IconButton(onPressed: () => showPotDialog(), icon: Icon(Icons.add))
         ],
-      ),
-
-      // FAB
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add),
       ),
 
       // Body

@@ -149,6 +149,9 @@ class DatabaseProvider extends ChangeNotifier {
 
     // Update Local Storage
     await fetchExpenses();
+
+    // Update Expense Category Map
+    initializeExpenseCategoryMap();
   }
 
   // Get Expenses For Day
@@ -160,6 +163,7 @@ class DatabaseProvider extends ChangeNotifier {
   ) =>
       _allExpenses
           .where((expense) =>
+              (expense.type == ExpenseType.Expense) &&
               (expense.datetime.day == selectedTime.day) &&
               (expense.datetime.month == selectedTime.month) &&
               (expense.datetime.year == selectedTime.year))
@@ -173,6 +177,7 @@ class DatabaseProvider extends ChangeNotifier {
   ) =>
       _allExpenses
           .where((expense) =>
+              (expense.type == ExpenseType.Expense) &&
               (expense.datetime.month == selectedTime.month) &&
               (expense.datetime.year == selectedTime.year))
           .toList();
@@ -183,7 +188,48 @@ class DatabaseProvider extends ChangeNotifier {
     DateTime selectedTime,
   ) =>
       _allExpenses
-          .where((expense) => (expense.datetime.year == selectedTime.year))
+          .where((expense) =>
+              (expense.type == ExpenseType.Expense) &&
+              (expense.datetime.year == selectedTime.year))
+          .toList();
+
+  // Get Expenses For Day
+  List<Expense> getIncomesForDay(
+    int day,
+    int month,
+    int year,
+    DateTime selectedTime,
+  ) =>
+      _allExpenses
+          .where((expense) =>
+              (expense.type == ExpenseType.Income) &&
+              (expense.datetime.day == selectedTime.day) &&
+              (expense.datetime.month == selectedTime.month) &&
+              (expense.datetime.year == selectedTime.year))
+          .toList();
+
+  // Get Expenses For Month
+  List<Expense> getIncomesForMonth(
+    int month,
+    int year,
+    DateTime selectedTime,
+  ) =>
+      _allExpenses
+          .where((expense) =>
+              (expense.type == ExpenseType.Income) &&
+              (expense.datetime.month == selectedTime.month) &&
+              (expense.datetime.year == selectedTime.year))
+          .toList();
+
+  // Get Expenses For Year
+  List<Expense> getIncomesForYear(
+    int year,
+    DateTime selectedTime,
+  ) =>
+      _allExpenses
+          .where((expense) =>
+              (expense.type == ExpenseType.Income) &&
+              (expense.datetime.year == selectedTime.year))
           .toList();
 
   /*
@@ -195,17 +241,25 @@ class DatabaseProvider extends ChangeNotifier {
   List<Category> _allCategories = [];
   List<Category> get allCategories => _allCategories;
 
-  final Map<String, Category> _expensesCategory = {};
-  Map<String, Category> get expensesCategory => _expensesCategory;
+  final Map<String, List<Expense>> _expenseCategoryMap = {};
+  Map<String, List<Expense>> get expenseCategoryMap => _expenseCategoryMap;
 
   // Initialize Expense Category Map
   void initializeExpenseCategoryMap() {
+    _expenseCategoryMap.clear();
+
     for (var expense in _allExpenses) {
-      final category = _allCategories
-          .where((category) => category.id == expense.categoryId)
-          .toList();
-      _expensesCategory.clear();
-      _expensesCategory[expense.id] = category.first;
+      String? category = expense.categoryId;
+
+      if( category == null ) {
+        continue;
+      }
+
+      if (!_expenseCategoryMap.containsKey(category)) {
+        _expenseCategoryMap[category] = [];
+      }
+
+      _expenseCategoryMap[category]!.add(expense);
     }
   }
 
@@ -302,7 +356,7 @@ class DatabaseProvider extends ChangeNotifier {
   List<Pot> get allPots => _allPots;
 
   // Add Pot
-  Future<void> addPot(String name, double goal, String iconPath) async {
+  Future<void> addPot(String name, int goal, String iconPath) async {
     // Add Pot In Firestore
     await _db.addPotInFirestore(name, goal, iconPath);
 

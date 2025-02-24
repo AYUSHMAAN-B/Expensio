@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Pot {
   final String id;
   final String name;
-  final double goal;
-  final double sofar;
+  final int goal;
+  final int sofar;
   final String? iconPath;
 
   Pot({
@@ -19,8 +19,8 @@ class Pot {
     return Pot(
       id: doc.id,
       name: doc['name'],
-      goal: doc['goal'] as double,
-      sofar: doc['sofar'] as double,
+      goal: (doc['goal'] as num).toInt(),
+      sofar: (doc['sofar'] as num).toInt(),
       iconPath: doc['imagePath'],
     );
   }

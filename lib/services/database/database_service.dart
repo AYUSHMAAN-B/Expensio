@@ -323,7 +323,10 @@ class DatabaseService {
 
   // Add Pot
   Future<void> addPotInFirestore(
-      String name, double goal, String iconPath) async {
+    String name,
+    int goal,
+    String iconPath,
+  ) async {
     try {
       // Get useId
       final userId = _auth.getCurrentUser()!.uid;
@@ -333,7 +336,7 @@ class DatabaseService {
         id: '',
         name: name,
         goal: goal,
-        sofar: 0.0,
+        sofar: 0,
         iconPath: iconPath,
       );
 
