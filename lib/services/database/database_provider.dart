@@ -193,7 +193,7 @@ class DatabaseProvider extends ChangeNotifier {
               (expense.datetime.year == selectedTime.year))
           .toList();
 
-  // Get Expenses For Day
+  // Get Incomes For Day
   List<Expense> getIncomesForDay(
     int day,
     int month,
@@ -208,7 +208,7 @@ class DatabaseProvider extends ChangeNotifier {
               (expense.datetime.year == selectedTime.year))
           .toList();
 
-  // Get Expenses For Month
+  // Get Incomes For Month
   List<Expense> getIncomesForMonth(
     int month,
     int year,
@@ -221,7 +221,7 @@ class DatabaseProvider extends ChangeNotifier {
               (expense.datetime.year == selectedTime.year))
           .toList();
 
-  // Get Expenses For Year
+  // Get Incomes For Year
   List<Expense> getIncomesForYear(
     int year,
     DateTime selectedTime,
@@ -231,6 +231,26 @@ class DatabaseProvider extends ChangeNotifier {
               (expense.type == ExpenseType.Income) &&
               (expense.datetime.year == selectedTime.year))
           .toList();
+
+  // Get Expenses For Custom Range
+  List<Expense> getExpensesForRange(DateTime fromDate, DateTime tillDate) {
+    return _allExpenses
+        .where((expense) =>
+            (expense.type == ExpenseType.Expense) &&
+            expense.datetime.isAfter(fromDate.subtract(Duration(days: 1))) &&
+            expense.datetime.isBefore(tillDate.add(Duration(days: 1))))
+        .toList();
+  }
+
+  // Get Incomes For Custom Range
+  List<Expense> getIncomesForRange(DateTime fromDate, DateTime tillDate) {
+    return _allExpenses
+        .where((expense) =>
+            (expense.type == ExpenseType.Income) &&
+            expense.datetime.isAfter(fromDate.subtract(Duration(days: 1))) &&
+            expense.datetime.isBefore(tillDate.add(Duration(days: 1))))
+        .toList();
+  }
 
   /*
   
@@ -251,7 +271,7 @@ class DatabaseProvider extends ChangeNotifier {
     for (var expense in _allExpenses) {
       String? category = expense.categoryId;
 
-      if( category == null ) {
+      if (category == null) {
         continue;
       }
 

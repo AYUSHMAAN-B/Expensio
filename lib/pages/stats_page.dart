@@ -16,6 +16,8 @@ class StatsPage extends StatefulWidget {
 class _StatsPageState extends State<StatsPage> {
   // Selected Date
   DateTime selectedDate = DateTime.now();
+  DateTime? fromDate;
+  DateTime? tillDate;
 
   // Selected Type
   String selectedType = 'Monthly';
@@ -27,6 +29,20 @@ class _StatsPageState extends State<StatsPage> {
   late final listeningProvider = Provider.of<DatabaseProvider>(context);
   late final databaseProvider =
       Provider.of<DatabaseProvider>(context, listen: false);
+
+  // Range Date Dialog
+  Future<void> showDateSelector({String? which}) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(3000),
+    );
+
+    setState(() {
+      (which == 'From') ? fromDate = pickedDate : tillDate = pickedDate;
+    });
+  }
 
   // To Select Month
   Future<void> showMonthSelector() async {
@@ -75,32 +91,65 @@ class _StatsPageState extends State<StatsPage> {
     }
   }
 
+  String getMonth(int month, String text) {
+    List<String> months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    return months[month - 1];
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get Month and Year
-    String monthName = DateFormat('MMMM').format(selectedDate);
+    String monthName = DateFormat('MMM').format(selectedDate);
     int month = selectedDate.month;
     int year = selectedDate.year;
 
     double totalIncome;
     double totalExpense;
 
-    // Get Total Income / Expense For SelectedDate
-    if (selectedType == 'Monthly') {
-      final allIncomes =
-          listeningProvider.getIncomesForMonth(month, year, selectedDate);
-      final allExpenses =
-          listeningProvider.getExpensesForMonth(month, year, selectedDate);
+    // Get Total [ Income / Expense ] For SelectedDate
+    if (fromDate == null || tillDate == null) {
+      if (selectedType == 'Monthly') {
+        final allIncomes =
+            listeningProvider.getIncomesForMonth(month, year, selectedDate);
+        final allExpenses =
+            listeningProvider.getExpensesForMonth(month, year, selectedDate);
 
-      totalIncome =
-          allIncomes.fold(0.0, (sum, expense) => sum + expense.amount);
-      totalExpense =
-          allExpenses.fold(0.0, (sum, expense) => sum + expense.amount);
-    } else {
+        totalIncome =
+            allIncomes.fold(0.0, (sum, expense) => sum + expense.amount);
+        totalExpense =
+            allExpenses.fold(0.0, (sum, expense) => sum + expense.amount);
+      } else {
+        final allIncomes =
+            listeningProvider.getIncomesForYear(year, selectedDate);
+        final allExpenses =
+            listeningProvider.getExpensesForYear(year, selectedDate);
+
+        totalIncome =
+            allIncomes.fold(0.0, (sum, expense) => sum + expense.amount);
+        totalExpense =
+            allExpenses.fold(0.0, (sum, expense) => sum + expense.amount);
+      }
+    }
+
+    // Get Total [ Income / Expense ] For [ FromDate -> TillDate ]
+    else {
       final allIncomes =
-          listeningProvider.getIncomesForYear(year, selectedDate);
+          listeningProvider.getIncomesForRange(fromDate!, tillDate!);
       final allExpenses =
-          listeningProvider.getExpensesForYear(year, selectedDate);
+          listeningProvider.getExpensesForRange(fromDate!, tillDate!);
 
       totalIncome =
           allIncomes.fold(0.0, (sum, expense) => sum + expense.amount);
@@ -109,7 +158,7 @@ class _StatsPageState extends State<StatsPage> {
     }
 
     // Get Expense Category Map
-    final expenseCategoryMap = databaseProvider.expenseCategoryMap;
+    final expenseCategoryMap = listeningProvider.expenseCategoryMap;
 
     return Scaffold(
       // Background color
@@ -125,8 +174,13 @@ class _StatsPageState extends State<StatsPage> {
                 setState(() {
                   if (selectedType == 'Monthly') {
                     selectedType = 'Yearly';
+                    fromDate = DateTime(year, 1, 1);
+                    tillDate = DateTime(year, 12, 31);
                   } else {
                     selectedType = 'Monthly';
+                    fromDate = DateTime(year, month, 1);
+                    tillDate = DateTime(
+                        year, month, DateTime.now().lastDayOfMonth()!.day);
                   }
                 });
               },
@@ -134,6 +188,7 @@ class _StatsPageState extends State<StatsPage> {
             ),
             ...((selectedType == 'Monthly')
                 ? [
+                    // Prev Date Icon
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -186,6 +241,7 @@ class _StatsPageState extends State<StatsPage> {
                     ),
                   ]
                 : [
+                    // Prev Date Icon
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -245,6 +301,90 @@ class _StatsPageState extends State<StatsPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              // Custom Date Range
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18.0,
+                  vertical: 22.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // From Date Box
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => showDateSelector(which: 'From'),
+                        child: Container(
+                          height: 65,
+                          padding: EdgeInsets.all(4.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            border: Border.all(
+                                color: Theme.of(context).colorScheme.primary),
+                            borderRadius: BorderRadius.horizontal(
+                                left: Radius.circular(16)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(' From'),
+                              Center(
+                                  child: Text(
+                                (fromDate != null)
+                                    ? '${getMonth(fromDate!.month, 'From Date')} ${fromDate!.day}, ${fromDate!.year}'
+                                    : 'Select',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
+                              )),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // To Date Box
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => showDateSelector(which: 'Till'),
+                        child: Container(
+                          height: 65,
+                          padding: EdgeInsets.all(4.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            border: Border(
+                              top: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary),
+                              bottom: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary),
+                              right: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary),
+                            ),
+                            borderRadius: BorderRadius.horizontal(
+                                right: Radius.circular(16)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(' Till'),
+                              Center(
+                                  child: Text(
+                                (tillDate != null)
+                                    ? '${getMonth(tillDate!.month, 'Till Date')} ${tillDate!.day}, ${tillDate!.year}'
+                                    : 'Select',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
+                              )),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               // Income [OR] Expense Toggle
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -317,55 +457,97 @@ class _StatsPageState extends State<StatsPage> {
               ),
 
               // Total & Pie Chart
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Total Income / Expense
-                  Column(
-                    children: [
-                      Text(
-                        (selectedExpenseType == ExpenseType.Expense)
-                            ? 'Total Expense'
-                            : 'Total Income',
-                        style: TextStyle(fontSize: 22),
-                      ),
-                      Text(
-                        (selectedExpenseType == ExpenseType.Income)
-                            ? formatIndianCurrency(totalIncome.toInt())
-                            : formatIndianCurrency(totalExpense.toInt()),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: Stack(
-                      children: [
-                        ExpensePieChart(
-                          expenseCategoryMap: expenseCategoryMap,
-                          totalIncome: totalIncome,
-                          totalExpense: totalExpense,
-                          selectedType: selectedType,
-                          selectedExpenseType: selectedExpenseType,
-                          selectedDate: selectedDate,
-                        ),
-                        Center(
-                          child: Icon(
-                            Icons.category,
-                            size: 44,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ],
+              SizedBox(
+                height: 300,
+                width: 300,
+                child: Stack(
+                  children: [
+                    ExpensePieChart(
+                      expenseCategoryMap: expenseCategoryMap,
+                      totalIncome: totalIncome,
+                      totalExpense: totalExpense,
+                      selectedType: selectedType,
+                      selectedExpenseType: selectedExpenseType,
+                      selectedDate: selectedDate,
+                      fromDate: fromDate,
+                      tillDate: tillDate,
                     ),
-                  ),
-                ],
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            (selectedExpenseType == ExpenseType.Expense)
+                                ? 'Total Expense'
+                                : 'Total Income',
+                            style: TextStyle(fontSize: 22),
+                          ),
+                          Text(
+                            (selectedExpenseType == ExpenseType.Income)
+                                ? formatIndianCurrency(totalIncome.toInt())
+                                : formatIndianCurrency(totalExpense.toInt()),
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
+
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     // Total Income / Expense
+              //     Column(
+              //       children: [
+              //         Text(
+              //           (selectedExpenseType == ExpenseType.Expense)
+              //               ? 'Total Expense'
+              //               : 'Total Income',
+              //           style: TextStyle(fontSize: 22),
+              //         ),
+              //         Text(
+              //           (selectedExpenseType == ExpenseType.Income)
+              //               ? formatIndianCurrency(totalIncome.toInt())
+              //               : formatIndianCurrency(totalExpense.toInt()),
+              //           style: TextStyle(
+              //             fontSize: 22,
+              //             fontWeight: FontWeight.bold,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+
+              //     SizedBox(
+              //       height: 200,
+              //       width: 200,
+              //       child: Stack(
+              //         children: [
+              //           ExpensePieChart(
+              //             expenseCategoryMap: expenseCategoryMap,
+              //             totalIncome: totalIncome,
+              //             totalExpense: totalExpense,
+              //             selectedType: selectedType,
+              //             selectedExpenseType: selectedExpenseType,
+              //             selectedDate: selectedDate,
+              //           ),
+              //           Center(
+              //             child: Icon(
+              //               Icons.category,
+              //               size: 44,
+              //               color: Theme.of(context).colorScheme.primary,
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ],
+              // ),
 
               const SizedBox(height: 10),
 
@@ -397,15 +579,27 @@ class _StatsPageState extends State<StatsPage> {
                       expenseCategoryMap[categoryId] ?? [];
 
                   // Filter expenses based on selected type and time period
-                  currentExpenses = currentExpenses.where((expense) {
-                    bool typeMatches = expense.type == selectedExpenseType;
-                    bool dateMatches = (selectedType == 'Monthly')
-                        ? (expense.datetime.year == selectedDate.year &&
-                            expense.datetime.month == selectedDate.month)
-                        : (expense.datetime.year == selectedDate.year);
+                  if (fromDate == null || tillDate == null) {
+                    currentExpenses = currentExpenses.where((expense) {
+                      bool typeMatches = expense.type == selectedExpenseType;
+                      bool dateMatches = (selectedType == 'Monthly')
+                          ? (expense.datetime.year == selectedDate.year &&
+                              expense.datetime.month == selectedDate.month)
+                          : (expense.datetime.year == selectedDate.year);
 
-                    return typeMatches && dateMatches;
-                  }).toList();
+                      return typeMatches && dateMatches;
+                    }).toList();
+                  } else {
+                    currentExpenses = currentExpenses.where((expense) {
+                      bool typeMatches = expense.type == selectedExpenseType;
+                      bool dateMatches = expense.datetime
+                              .isAfter(fromDate!.subtract(Duration(days: 1))) &&
+                          expense.datetime
+                              .isBefore(tillDate!.add(Duration(days: 1)));
+
+                      return typeMatches && dateMatches;
+                    }).toList();
+                  }
 
                   // Calculate total sum for the category
                   double categoryTotal = currentExpenses.fold(
@@ -440,44 +634,20 @@ class _StatsPageState extends State<StatsPage> {
                             children: [
                               Container(
                                 height: 22,
-                                width: 22,
+                                width: 50,
                                 decoration: BoxDecoration(
                                   color: categoryColor,
                                   shape: BoxShape.rectangle,
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(2)),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    categoryName[0],
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary,
-                                    ),
-                                  ),
-                                ),
                               ),
-                              const SizedBox(width: 5),
+                              const SizedBox(width: 15),
                               Text(
                                 categoryName,
                                 style: TextStyle(fontSize: 16),
                               ),
                             ],
-                          ),
-                        ),
-
-                        // Category Color
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            height: 25,
-                            width: 25,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: categoryColor,
-                            ),
                           ),
                         ),
 
@@ -490,11 +660,72 @@ class _StatsPageState extends State<StatsPage> {
                             textAlign: TextAlign.right,
                           ),
                         ),
+
+                        // // Category Name
+                        // Expanded(
+                        //   flex: 2,
+                        //   child: Row(
+                        //     children: [
+                        //       Container(
+                        //         height: 22,
+                        //         width: 22,
+                        //         decoration: BoxDecoration(
+                        //           color: categoryColor,
+                        //           shape: BoxShape.rectangle,
+                        //           borderRadius:
+                        //               BorderRadius.all(Radius.circular(2)),
+                        //         ),
+                        //         child: Center(
+                        //           child: Text(
+                        //             categoryName[0],
+                        //             style: TextStyle(
+                        //               fontSize: 16,
+                        //               color: Theme.of(context)
+                        //                   .colorScheme
+                        //                   .tertiary,
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //       const SizedBox(width: 5),
+                        //       Text(
+                        //         categoryName,
+                        //         style: TextStyle(fontSize: 16),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+
+                        // // Category Color
+                        // Expanded(
+                        //   flex: 1,
+                        //   child: Container(
+                        //     height: 25,
+                        //     width: 25,
+                        //     decoration: BoxDecoration(
+                        //       shape: BoxShape.circle,
+                        //       color: categoryColor,
+                        //     ),
+                        //   ),
+                        // ),
+
+                        // // Category Amount
+                        // Expanded(
+                        //   flex: 1,
+                        //   child: Text(
+                        //     '₹ ${categoryTotal.toStringAsFixed(2)}',
+                        //     style: TextStyle(fontSize: 16),
+                        //     textAlign: TextAlign.right,
+                        //   ),
+                        // ),
                       ],
                     ),
                   );
                 },
-              )
+              ),
+
+              // Line Chart
+              // LineChartCard(),
             ],
           ),
         ),

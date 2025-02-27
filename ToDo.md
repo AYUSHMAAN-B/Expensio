@@ -17,8 +17,8 @@
   - [✔] Creating UI components for Daily Expenses.
   - [✔] Creating UI components for Monthly Expenses.
   - [✔] Creating UI components for Yearly Expenses.
-  - [ ] Creating UI components for Pots Screen.
-  - [ ] Creating UI components for Stats Screen.
+  - [✔] Creating UI components for Pots Screen.
+  - [-] Creating UI components for Stats Screen.
   - [✔] Creating UI components for Profile Screen.
 - [✔] Writing Firestore functions for the database.
 
@@ -29,10 +29,10 @@
 - [✔] User authentication (Login, Signup)
 - [✔] Expense tracking (Add, Edit, Delete expenses)
 - [✔] Categorization of expenses
-- [ ] Savings pots for big purchases
+- [✔] Savings pots for big purchases
 - [ ] Budgeting & spending insights
 - [ ] Recurring transactions automation
-- [ ] Export expenses as CSV/PDF
+- [-] Export expenses as CSV/PDF
 - [✔] Cloud backup for expenses
 
 ---
@@ -57,31 +57,31 @@
 
 - [-] Login Screen
 - [-] Signup Screen
-- [ ] Forgot Password Screen
+- [-] Forgot Password Screen
 
 ### [ ] Design main dashboard
 
 - [✔] Expense overview section
 - [ ] Budget tracking section
-- [ ] Savings pots progress section
+- [✔] Savings pots progress section
 
 ### [ ] Design expense management screens
 
 - [✔] Add new expense
 - [✔] Edit/Delete existing expenses
-- [ ] Filter expenses by category, date, and payment method
+- [✔] Filter expenses by category, date, and payment method
 
 ### [ ] Design budget tracking UI
 
-- [ ] Monthly budget overview
-- [ ] Category-wise budget breakdown
+- [✔] Monthly budget overview
+- [✔] Category-wise budget breakdown
 - [ ] Alerts for overspending
 
 ### [ ] Design savings pots UI
 
-- [ ] Create a new savings pot
-- [ ] Track savings goal progress
-- [ ] Add money to a savings pot
+- [✔] Create a new savings pot
+- [✔] Track savings goal progress
+- [✔] Add money to a savings pot
 
 ### [ ] Implement notifications UI
 
@@ -97,24 +97,24 @@
 - [✔] Sign up users with email/password
 - [✔] Login users securely
 - [✔] Logout functionality
-- [ ] Reset password feature
+- [-] Reset password feature
 
 ### [ ] Implement Firestore Functions
 
 #### **User Management**
 
 - [✔] Store user data in Firestore (`users/{userId}`)
-- [ ] Update user profile details
-- [ ] Fetch user settings from Firestore
+- [-] Update user profile details
+- [-] Fetch user settings from Firestore
 
 #### **Expense Management**
 
 - [✔] Add a new expense (`users/{userId}/expenses/{expenseId}`)
 - [✔] Edit an existing expense
 - [✔] Delete an expense
-- [ ] Fetch expenses by date range
-- [ ] Filter expenses by category
-- [ ] Get total spending for a given period
+- [✔] Fetch expenses by date range
+- [✔] Filter expenses by category
+- [✔] Get total spending for a given period
 
 #### **Category Management**
 
@@ -142,8 +142,8 @@
 
 #### **Export & Backup**
 
-- [ ] Export expense data as CSV
-- [ ] Export expense data as PDF
+- [-] Export expense data as CSV
+- [-] Export expense data as PDF
 - [ ] Implement cloud backup (Firestore rules & security)
 
 ---

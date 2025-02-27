@@ -9,6 +9,8 @@ class ExpensePieChart extends StatelessWidget {
   final String selectedType;
   final ExpenseType selectedExpenseType;
   final DateTime selectedDate;
+  final DateTime? fromDate;
+  final DateTime? tillDate;
 
   const ExpensePieChart({
     super.key,
@@ -18,6 +20,8 @@ class ExpensePieChart extends StatelessWidget {
     required this.selectedType,
     required this.selectedExpenseType,
     required this.selectedDate,
+    this.fromDate,
+    this.tillDate,
   });
 
   @override
@@ -27,15 +31,31 @@ class ExpensePieChart extends StatelessWidget {
 
     expenseCategoryMap.forEach((categoryId, expenses) {
       // Filter expenses based on selected type and time period
-      expenses = expenses.where((expense) {
-        bool typeMatches = expense.type == selectedExpenseType;
-        bool dateMatches = (selectedType == 'Monthly')
-            ? (expense.datetime.year == selectedDate.year &&
-                expense.datetime.month == selectedDate.month)
-            : (expense.datetime.year == selectedDate.year);
+      if (fromDate == null || tillDate == null) {
+        expenses = expenses.where((expense) {
+          bool typeMatches = expense.type == selectedExpenseType;
+          bool dateMatches = (selectedType == 'Monthly')
+              ? (expense.datetime.year == selectedDate.year &&
+                  expense.datetime.month == selectedDate.month)
+              : (expense.datetime.year == selectedDate.year);
 
-        return typeMatches && dateMatches;
-      }).toList();
+          return typeMatches && dateMatches;
+        }).toList();
+
+        print('FROM DATE : $fromDate');
+        print('TILL DATE : $tillDate');
+      } else {
+        expenses = expenses.where((expense) {
+          bool typeMatches = expense.type == selectedExpenseType;
+          bool dateMatches =
+              expense.datetime.isAfter(fromDate!.subtract(Duration(days: 1))) &&
+                  expense.datetime.isBefore(tillDate!.add(Duration(days: 1)));
+
+          return typeMatches && dateMatches;
+        }).toList();
+
+        print('EXPENSES :==> $expenses');
+      }
 
       // Calculate total sum for the category
       double categoryTotal =
@@ -55,7 +75,7 @@ class ExpensePieChart extends StatelessWidget {
           color: categoryColor,
           value: categoryTotal,
           title: '${percentage.toStringAsFixed(0)}%',
-          radius: 50,
+          radius: 75,
           titleStyle: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
@@ -69,7 +89,7 @@ class ExpensePieChart extends StatelessWidget {
       PieChartData(
         sections: pieChartSections,
         sectionsSpace: 2,
-        centerSpaceRadius: 55,
+        centerSpaceRadius: 80,
         borderData: FlBorderData(show: false),
       ),
     );
