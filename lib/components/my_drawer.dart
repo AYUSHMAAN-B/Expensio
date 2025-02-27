@@ -1,3 +1,4 @@
+import 'package:expense_tracker/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -33,44 +34,44 @@ class MyDrawer extends StatelessWidget {
               const SizedBox(height: 35),
 
               // Home
-              ListTile(
-                leading: Padding(
-                  padding: const EdgeInsets.only(left: 24.0, right: 16.0),
-                  child: Icon(
-                    Icons.home,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                title: Text(
-                  'H O M E',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
+              // ListTile(
+              //   leading: Padding(
+              //     padding: const EdgeInsets.only(left: 24.0, right: 16.0),
+              //     child: Icon(
+              //       Icons.home,
+              //       color: Theme.of(context).colorScheme.primary,
+              //     ),
+              //   ),
+              //   title: Text(
+              //     'H O M E',
+              //     style: TextStyle(
+              //       color: Theme.of(context).colorScheme.primary,
+              //     ),
+              //   ),
+              //   onTap: () {
+              //     Navigator.of(context).pop();
+              //   },
+              // ),
 
               // Profile
-              ListTile(
-                leading: Padding(
-                  padding: const EdgeInsets.only(left: 24.0, right: 16.0),
-                  child: Icon(
-                    Icons.person,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                title: Text(
-                  'P R O F I L E',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
+              // ListTile(
+              //   leading: Padding(
+              //     padding: const EdgeInsets.only(left: 24.0, right: 16.0),
+              //     child: Icon(
+              //       Icons.person,
+              //       color: Theme.of(context).colorScheme.primary,
+              //     ),
+              //   ),
+              //   title: Text(
+              //     'P R O F I L E',
+              //     style: TextStyle(
+              //       color: Theme.of(context).colorScheme.primary,
+              //     ),
+              //   ),
+              //   onTap: () {
+              //     Navigator.of(context).pop();
+              //   },
+              // ),
 
               // Settings
               ListTile(
@@ -89,33 +90,58 @@ class MyDrawer extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.of(context).pop();
+
+                  Navigator.of(context).push((MaterialPageRoute(
+                      builder: (context) => SettingsPage())));
+                },
+              ),
+
+              // About
+              ListTile(
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 24.0, right: 16.0),
+                  child: Icon(
+                    Icons.info,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                title: Text(
+                  'A B O U T',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
                 },
               ),
             ],
           ),
 
           // LogOut
-          Padding(
-            padding: const EdgeInsets.only(bottom: 24.0),
-            child: ListTile(
-              leading: Padding(
-                padding: const EdgeInsets.only(left: 24.0, right: 16.0),
-                child: Icon(
-                  Icons.logout,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              title: Text(
-                'L O G   O U T',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(bottom: 24.0),
+          //   child: ListTile(
+          //     leading: Padding(
+          //       padding: const EdgeInsets.only(left: 24.0, right: 16.0),
+          //       child: Icon(
+          //         Icons.logout,
+          //         color: Theme.of(context).colorScheme.primary,
+          //       ),
+          //     ),
+          //     title: Text(
+          //       'L O G   O U T',
+          //       style: TextStyle(
+          //         color: Theme.of(context).colorScheme.primary,
+          //       ),
+          //     ),
+          //     onTap: () async {
+          //       Navigator.of(context).pop();
+
+          //       await AuthService().signOut();
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );

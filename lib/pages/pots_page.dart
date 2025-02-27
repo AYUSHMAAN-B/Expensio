@@ -113,32 +113,35 @@ class _PotsPageState extends State<PotsPage> {
                 // Add
                 MaterialButton(
                   onPressed: () async {
-                    // Pop the dialog
-                    if (mounted) Navigator.of(context).pop();
+                    if (nameController.text.isNotEmpty &&
+                        goalController.text.isNotEmpty) {
+                      // Pop the dialog
+                      if (mounted) Navigator.of(context).pop();
 
-                    if (edit) {
-                      // Edit the pot in firestore
-                      await databaseProvider.editPot(
-                        potId!,
-                        nameController.text,
-                        double.parse(goalController.text),
-                        selectedIconPath ?? '',
-                      );
-                    } else {
-                      // Add the pot in firestore
-                      await databaseProvider.addPot(
-                        nameController.text,
-                        int.parse(goalController.text),
-                        selectedIconPath ?? '',
-                      );
+                      if (edit) {
+                        // Edit the pot in firestore
+                        await databaseProvider.editPot(
+                          potId!,
+                          nameController.text,
+                          double.parse(goalController.text),
+                          selectedIconPath ?? '',
+                        );
+                      } else {
+                        // Add the pot in firestore
+                        await databaseProvider.addPot(
+                          nameController.text,
+                          int.parse(goalController.text),
+                          selectedIconPath ?? '',
+                        );
+                      }
+
+                      // Clear the controllers
+                      nameController.clear();
+                      goalController.clear();
+
+                      // Revert the iconPath
+                      selectedIconPath = null;
                     }
-
-                    // Clear the controllers
-                    nameController.clear();
-                    goalController.clear();
-
-                    // Revert the iconPath
-                    selectedIconPath = null;
                   },
                   child: edit ? Text('Save') : Text('Add'),
                 ),

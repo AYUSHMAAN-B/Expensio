@@ -221,6 +221,7 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   border: InputBorder.none,
                                 ),
+                                keyboardType: TextInputType.numberWithOptions(),
                               ),
                             ),
                           ),
@@ -266,37 +267,40 @@ class _HomePageState extends State<HomePage>
                               color: Colors.green, shape: BoxShape.circle),
                           child: IconButton(
                             onPressed: () {
-                              // Pop the bottom sheet
-                              Navigator.of(context).pop();
+                              if (nameController.text.isNotEmpty &&
+                                  amountController.text.isNotEmpty) {
+                                // Pop the bottom sheet
+                                Navigator.of(context).pop();
 
-                              if (edit == true) {
-                                // Add the expense in db
-                                databaseProvider.editExpense(
-                                  selectedExpenseId!,
-                                  nameController.text,
-                                  double.parse(amountController.text),
-                                  descController.text,
-                                  selectedExpenseType,
-                                );
+                                if (edit == true) {
+                                  // Add the expense in db
+                                  databaseProvider.editExpense(
+                                    selectedExpenseId!,
+                                    nameController.text,
+                                    double.parse(amountController.text),
+                                    descController.text,
+                                    selectedExpenseType,
+                                  );
 
-                                // Revert the selected to null
-                                selectedExpenseId = null;
-                              } else {
-                                // Add the expense in db
-                                databaseProvider.addExpense(
-                                  nameController.text,
-                                  descController.text,
-                                  double.parse(amountController.text),
-                                  selectedExpenseType,
-                                  null,
-                                  selectedDate,
-                                );
+                                  // Revert the selected to null
+                                  selectedExpenseId = null;
+                                } else {
+                                  // Add the expense in db
+                                  databaseProvider.addExpense(
+                                    nameController.text,
+                                    descController.text,
+                                    double.parse(amountController.text),
+                                    selectedExpenseType,
+                                    null,
+                                    selectedDate,
+                                  );
+                                }
+
+                                // Clear the controllers
+                                nameController.clear();
+                                amountController.clear();
+                                descController.clear();
                               }
-
-                              // Clear the controllers
-                              nameController.clear();
-                              amountController.clear();
-                              descController.clear();
                             },
                             icon: Icon(
                               Icons.done,

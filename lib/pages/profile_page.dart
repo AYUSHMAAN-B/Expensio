@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:expense_tracker/pages/category_expenses_page.dart';
 import 'package:expense_tracker/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -107,29 +108,31 @@ class _ProfilePageState extends State<ProfilePage> {
                 // Add
                 TextButton(
                   onPressed: () async {
-                    // Pop the dialog
-                    if (mounted) Navigator.of(context).pop();
+                    if (categoryController.text.isNotEmpty) {
+                      // Pop the dialog
+                      if (mounted) Navigator.of(context).pop();
 
-                    if (edit) {
-                      // Edit the category in the firestore
-                      await databaseProvider.editCategory(
-                        categoryId!,
-                        categoryController.text,
-                        selectedColor,
-                      );
-                    } else {
-                      // Add the category in the firestore
-                      await databaseProvider.addCategory(
-                        categoryController.text,
-                        selectedColor,
-                      );
+                      if (edit) {
+                        // Edit the category in the firestore
+                        await databaseProvider.editCategory(
+                          categoryId!,
+                          categoryController.text,
+                          selectedColor,
+                        );
+                      } else {
+                        // Add the category in the firestore
+                        await databaseProvider.addCategory(
+                          categoryController.text,
+                          selectedColor,
+                        );
+                      }
+
+                      // clear the controller
+                      categoryController.clear();
+
+                      // revert the selected color
+                      selectedColor = Colors.transparent;
                     }
-
-                    // clear the controller
-                    categoryController.clear();
-
-                    // revert the selected color
-                    selectedColor = Colors.transparent;
                   },
                   child: Text('Save'),
                 ),
@@ -224,11 +227,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 250,
                     padding: EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      // color: Theme.of(context).colorScheme.secondary,
-                      color: Theme.of(context).colorScheme.secondary.withAlpha(150),
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0, vertical: 16.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,8 +289,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         top: 125.0, bottom: 16.0, left: 16.0, right: 16.0),
                     padding: EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
                       borderRadius: BorderRadius.all(Radius.circular(16)),
+                      color: Theme.of(context).colorScheme.surface,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(100),
+                          blurRadius: 5,
+                          spreadRadius: 2,
+                        )
+                      ],
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -306,9 +316,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             Text(
                               'Balance',
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
+                              style: TextStyle(fontSize: 18),
                             ),
                           ],
                         ),
@@ -415,49 +423,64 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-                    child: Container(
-                      height: 50,
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.tertiary,
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      child: Row(
-                        children: [
-                          // Category Symbol
-                          Container(
-                            height: 22,
-                            width: 22,
-                            decoration: BoxDecoration(
-                              color: category.color,
-                              shape: BoxShape.rectangle,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(2)),
-                            ),
-                            child: Center(
-                              child: Text(
-                                category.name[0],
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Theme.of(context).colorScheme.tertiary,
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => CategoryExpensesPage(
+                                categoryId: category.id,
+                                categoryName: category.name,
+                              ))),
+                      child: Container(
+                        height: 50,
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 4.0),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.tertiary,
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                // Category Symbol
+                                Container(
+                                  height: 22,
+                                  width: 22,
+                                  decoration: BoxDecoration(
+                                    color: category.color,
+                                    shape: BoxShape.rectangle,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(2)),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      category.name[0],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .tertiary,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
+                                const SizedBox(width: 16),
 
-                          // Category Name
-                          Text(category.name)
-                        ],
+                                // Category Name
+                                Text(category.name)
+                              ],
+                            ),
+                            Icon(Icons.keyboard_arrow_right_outlined),
+                          ],
+                        ),
                       ),
                     ),
                   );
                 },
               ),
-            
+
               const SizedBox(height: 25),
             ],
           ),

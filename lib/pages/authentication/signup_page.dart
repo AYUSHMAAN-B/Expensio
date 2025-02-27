@@ -5,6 +5,7 @@ import 'package:expense_tracker/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+
 class SignupPage extends StatefulWidget {
   final VoidCallback onTap;
 
@@ -36,29 +37,38 @@ class _SignupPageState extends State<SignupPage> {
           barrierDismissible: false);
 
       try {
-        await auth.signUpWithEmailAndPassword(
-            nameController.text, emailController.text, passwordController.text);
+        if (nameController.text.isNotEmpty &&
+            emailController.text.isNotEmpty &&
+            passwordController.text.isNotEmpty) {
+          // Sign Up With Email And Password
+          await auth.signUpWithEmailAndPassword(nameController.text,
+              emailController.text, passwordController.text);
 
-        Navigator.of(context).pop();
+          // Pop the dialog
+          Navigator.of(context).pop();
 
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Success'),
-            content: const Text('Account created successfully!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+          // Show success dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Success'),
+              content: const Text('Account created successfully!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
       } catch (e) {
+        // Pop the dialog
         Navigator.of(context).pop();
 
+        // Show error dialog
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -217,7 +227,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ],
                   ),
-                  
+
                   // Google SignUp Text
                   Text(
                     'Sign Up using Google',

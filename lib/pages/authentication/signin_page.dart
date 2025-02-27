@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:expense_tracker/components/my_text_field.dart';
+import 'package:expense_tracker/pages/authentication/forget_password_page.dart';
 import 'package:expense_tracker/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,11 +35,20 @@ class _SigninPageState extends State<SigninPage> {
         barrierDismissible: false);
 
     try {
-      await auth.signInWithEmailAndPassword(
-          emailController.text, passwordController.text);
-      Navigator.of(context).pop();
+      if (emailController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty) {
+        // Sign In With Email and Password
+        await auth.signInWithEmailAndPassword(
+            emailController.text, passwordController.text);
+
+        // Pop the dialog
+        Navigator.of(context).pop();
+      }
     } catch (e) {
+      // Pop the dialog
       if (mounted) Navigator.of(context).pop();
+
+      // Show error dialog
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -163,13 +173,15 @@ class _SigninPageState extends State<SigninPage> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Navigator.of(context).push(MaterialPageRoute(
-                          //     builder: (context) => ForgotPasswordPage()));
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ForgotPasswordPage()));
                         },
                         child: Text(
                           'Forgot Password',
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary),
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
