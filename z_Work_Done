@@ -32,3 +32,21 @@
 [27 / 02 / 2025]
     [x] Added Custom Date Range For Stats
     [x] Done with Stats Page
+    [x] Changed Theme Partially
+    [x] Added App Icon
+    
+
+
+
+[-] Fix edge cases for controllers
+[-] Change the monthly expenses UI.  
+[-] Complete forgot password screen and implementation.  
+[-] Implement the from date and to date for each category and show all the expenses in a separate screen.  
+[-] Implement the settings to change the password and user profile.  
+[-] Check if the controller text is empty and do not trigger the functions.  
+[-] Implement an option for the user to keep an overall budget constraint and display it on the profile page.  
+[-] Implement budget constraint for each category and show it in the profile page.    
+[-] Try to add a line graph or a bar graph under the categories in the stats page.  
+[-] In the settings page, add log out and delete account options.  
+[-] Add an "About" section mentioning me, future updates, and inspirations.  
+[-] Implement the download PDF functionality in the stats screen with full details of each expense.  

@@ -184,7 +184,14 @@ class _StatsPageState extends State<StatsPage> {
                   }
                 });
               },
-              child: Text(selectedType),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary.withAlpha(100),
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                ),
+                child: Text(selectedType),
+              ),
             ),
             ...((selectedType == 'Monthly')
                 ? [

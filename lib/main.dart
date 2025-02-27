@@ -1,5 +1,5 @@
 import 'package:expense_tracker/firebase_options.dart';
-import 'package:expense_tracker/pages/authentication/initial_page.dart';
+import 'package:expense_tracker/pages/splash_screen.dart';
 import 'package:expense_tracker/services/database/database_provider.dart';
 import 'package:expense_tracker/themes/theme_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: Provider.of<ThemeProvider>(context).themeData,
       debugShowCheckedModeBanner: false,
-      home: InitialPage(),
+      home: SplashScreen(),
     );
   }
 }

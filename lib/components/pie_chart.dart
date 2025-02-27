@@ -41,9 +41,6 @@ class ExpensePieChart extends StatelessWidget {
 
           return typeMatches && dateMatches;
         }).toList();
-
-        print('FROM DATE : $fromDate');
-        print('TILL DATE : $tillDate');
       } else {
         expenses = expenses.where((expense) {
           bool typeMatches = expense.type == selectedExpenseType;

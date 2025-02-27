@@ -28,7 +28,7 @@ class _PotsPageState extends State<PotsPage> {
   String? selectedIconPath;
 
   // Selected type
-  int selectedType = 0;
+  int selectedType = 1;
 
   @override
   void initState() {

@@ -4,6 +4,7 @@ import 'package:expense_tracker/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -172,8 +173,38 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // Format Amount
+  String formatIndianCurrency(int amount) {
+    if (amount >= 10000000) {
+      return "${(amount / 10000000).toStringAsFixed(2)} Cr";
+    } else if (amount >= 100000) {
+      return "₹ ${(amount / 100000).toStringAsFixed(2)} L";
+    } else {
+      final formatter = NumberFormat.currency(
+          locale: "en_IN", symbol: "₹ ", decimalDigits: 0);
+      return formatter.format(amount);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Get Date
+    String monthName = DateFormat('MMM').format(DateTime.now());
+    int month = DateTime.now().month;
+    int year = DateTime.now().year;
+
+    double totalIncome;
+    double totalExpense;
+
+    final allIncomes =
+        listeningProvider.getIncomesForMonth(month, year, DateTime.now());
+    final allExpenses =
+        listeningProvider.getExpensesForMonth(month, year, DateTime.now());
+
+    totalIncome = allIncomes.fold(0.0, (sum, expense) => sum + expense.amount);
+    totalExpense =
+        allExpenses.fold(0.0, (sum, expense) => sum + expense.amount);
+
     final categories = listeningProvider.allCategories;
 
     return Scaffold(
@@ -190,49 +221,61 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   // Name and Photo
                   Container(
-                    height: 150,
+                    height: 250,
                     padding: EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(32),
-                          bottomRight: Radius.circular(32)),
+                      // color: Theme.of(context).colorScheme.secondary,
+                      color: Theme.of(context).colorScheme.secondary.withAlpha(150),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Hello',
-                              style: TextStyle(
-                                fontSize: 18,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Hello',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Ayushmaan Betapudi',
-                              style: TextStyle(
-                                fontSize: 24,
+                              Text(
+                                'Ayushmaan Betapudi',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
                               ),
+                              const SizedBox(height: 15),
+                            ],
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
                             ),
-                            const SizedBox(height: 15),
-                          ],
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
+                            child: Icon(
+                              Icons.person,
+                              size: 56,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.person,
-                            size: 56,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    height: 50,
+                    margin: EdgeInsets.only(top: 220.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32)),
                     ),
                   ),
 
@@ -243,29 +286,48 @@ class _ProfilePageState extends State<ProfilePage> {
                         top: 125.0, bottom: 16.0, left: 16.0, right: 16.0),
                     padding: EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: Theme.of(context).colorScheme.secondary,
                       borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${formatIndianCurrency((totalIncome - totalExpense).toInt())} /-',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Balance',
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Column(
                               children: [
                                 Text(
-                                  'Total Income (Feb)',
+                                  '${formatIndianCurrency(totalIncome.toInt())} /-',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  '₹ 1,04,000 /-',
+                                  'Total Income ($monthName)',
                                   style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ],
@@ -273,39 +335,19 @@ class _ProfilePageState extends State<ProfilePage> {
                             Column(
                               children: [
                                 Text(
-                                  'Total Expense (Feb)',
+                                  '${formatIndianCurrency(totalExpense.toInt())} /-',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  '₹ 50,000 /-',
+                                  'Total Expense ($monthName)',
                                   style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ],
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text(
-                              'Balance',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '₹ 54,000 /-',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
                             ),
                           ],
                         ),
@@ -334,6 +376,7 @@ class _ProfilePageState extends State<ProfilePage> {
               // List<Category>
               ListView.builder(
                 shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   // Extract each category
@@ -414,6 +457,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 },
               ),
+            
+              const SizedBox(height: 25),
             ],
           ),
         ),
