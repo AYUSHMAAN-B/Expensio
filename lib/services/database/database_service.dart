@@ -317,7 +317,7 @@ class DatabaseService {
 
   /*
   
-  POTS
+  P O T S
 
   */
 
@@ -449,6 +449,39 @@ class DatabaseService {
     // Catch error
     catch (e) {
       print('deletePotInFirestore :=> \n$e');
+    }
+  }
+
+  /*
+  
+  U S E R
+
+  */
+
+  // Update User Profile
+  Future<void> updateUserProfileInFirestore(String newName) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(_auth.getCurrentUser()!.uid)
+          .update({'name': newName});
+    }
+
+    // Catch Error
+    catch (e) {
+      print('updateUserNameInFirestore :==> \n$e');
+    }
+  }
+
+  // Update Password
+  Future<void> updatePasswordInFirestore(String newPassword) async {
+    try {
+      await _auth.getCurrentUser()!.updatePassword(newPassword);
+    }
+
+    // Catch Error
+    catch (e) {
+      print('updatePasswordInFirestore :==> \n$e');
     }
   }
 }

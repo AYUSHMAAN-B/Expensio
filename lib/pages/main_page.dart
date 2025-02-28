@@ -30,9 +30,9 @@ class _MainPageState extends State<MainPage> {
       // Bottom Navigation Bar
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        buttonBackgroundColor: Theme.of(context).colorScheme.primary,
+        buttonBackgroundColor: Theme.of(context).colorScheme.secondary,
         animationDuration: Duration(milliseconds: 250),
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.secondary,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;

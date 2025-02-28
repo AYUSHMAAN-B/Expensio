@@ -13,6 +13,11 @@ class AuthService {
     return _auth.currentUser;
   }
 
+  Future<UserProfile> getCurrentUserInfo() async {
+    final userDoc =  await _firestore.collection('users').doc(_auth.currentUser!.uid).get();
+    return UserProfile.fromDocument(userDoc);
+  }
+
   // SignUp
   Future<UserCredential> signUpWithEmailAndPassword(
       String name, String email, String password) async {

@@ -367,7 +367,7 @@ class DatabaseProvider extends ChangeNotifier {
 
   /*
   
-  POTS
+  P O T S
 
   */
 
@@ -423,5 +423,24 @@ class DatabaseProvider extends ChangeNotifier {
 
     // Update UI
     notifyListeners();
+  }
+
+
+  /*
+  
+  U S E R
+  
+  */
+
+  // Update User Profile
+  Future<void> updateUserProfile(String newName) async {
+    // Update in Firestore
+    await _db.updateUserProfileInFirestore(newName);
+  }
+
+  // Update Password
+  Future<void> updatePassword(String newPassword) async {
+    // Update in Firestore
+    await _db.updatePasswordInFirestore(newPassword);
   }
 }

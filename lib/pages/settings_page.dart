@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:expense_tracker/pages/edit_profile_page.dart';
 import 'package:expense_tracker/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 
@@ -108,11 +109,12 @@ class _SettingsPageState extends State<SettingsPage> {
       body: SafeArea(
         child: Column(
           children: [
-
             // Edit User Settings
             GestureDetector(
               onTap: () async {
                 Navigator.of(context).pop();
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => EditProfilePage()));
               },
               child: Container(
                 height: 75,

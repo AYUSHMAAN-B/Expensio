@@ -1,4 +1,5 @@
 import 'package:expense_tracker/pages/settings_page.dart';
+import 'package:expense_tracker/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -16,11 +17,17 @@ class MyDrawer extends StatelessWidget {
               const SizedBox(height: 68),
 
               // Drawer Header
-              Icon(
-                Icons.person,
-                size: 88,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              AuthService().getCurrentUser()!.photoURL == null
+                  ? Icon(
+                      Icons.person,
+                      size: 88,
+                      color: Theme.of(context).colorScheme.primary,
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      child: Image.network(
+                          AuthService().getCurrentUser()!.photoURL ?? ''),
+                    ),
 
               const SizedBox(height: 35),
 

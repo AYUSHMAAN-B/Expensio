@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:expense_tracker/models/user.dart';
 import 'package:expense_tracker/pages/category_expenses_page.dart';
+import 'package:expense_tracker/services/auth/auth_service.dart';
 import 'package:expense_tracker/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -27,6 +29,8 @@ class _ProfilePageState extends State<ProfilePage> {
   // Selected Color
   Color selectedColor = Colors.transparent;
 
+  UserProfile? user;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +39,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void fetchCategories() async {
     await databaseProvider.fetchCategories();
+    user = await AuthService().getCurrentUserInfo();
+    setState(() {});
   }
 
   @override
@@ -54,9 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
               title: Text('Add Your Custom Category'),
               content: SingleChildScrollView(
                 padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context)
-                        .viewInsets
-                        .bottom), // Push content up when keyboard appears
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -247,7 +251,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ),
                               Text(
-                                'Ayushmaan Betapudi',
+                                user == null ? '' : user!.name,
                                 style: TextStyle(
                                   fontSize: 24,
                                 ),
