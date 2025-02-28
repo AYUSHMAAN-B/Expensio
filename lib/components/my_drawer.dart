@@ -1,3 +1,4 @@
+import 'package:expense_tracker/pages/about_page.dart';
 import 'package:expense_tracker/pages/settings_page.dart';
 import 'package:expense_tracker/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -120,6 +121,8 @@ class MyDrawer extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                      (MaterialPageRoute(builder: (context) => AboutPage())));
                 },
               ),
             ],

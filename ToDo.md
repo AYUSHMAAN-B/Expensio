@@ -13,12 +13,12 @@
 
 - [✔] Creating models for UserProfile, Expense and Post.
 - [✔] Creating screens and bottom navigation bar.
-- [ ] Creating UI components for all screens.
+- [✔] Creating UI components for all screens.
   - [✔] Creating UI components for Daily Expenses.
   - [✔] Creating UI components for Monthly Expenses.
   - [✔] Creating UI components for Yearly Expenses.
   - [✔] Creating UI components for Pots Screen.
-  - [-] Creating UI components for Stats Screen.
+  - [✔] Creating UI components for Stats Screen.
   - [✔] Creating UI components for Profile Screen.
 - [✔] Writing Firestore functions for the database.
 
@@ -32,7 +32,7 @@
 - [✔] Savings pots for big purchases
 - [ ] Budgeting & spending insights
 - [ ] Recurring transactions automation
-- [-] Export expenses as CSV/PDF
+- [✔] Export expenses as CSV/PDF
 - [✔] Cloud backup for expenses
 
 ---
@@ -55,9 +55,9 @@
 
 ### [ ] Design authentication screens
 
-- [-] Login Screen
-- [-] Signup Screen
-- [-] Forgot Password Screen
+- [✔] Login Screen
+- [✔] Signup Screen
+- [✔] Forgot Password Screen
 
 ### [ ] Design main dashboard
 
@@ -97,15 +97,15 @@
 - [✔] Sign up users with email/password
 - [✔] Login users securely
 - [✔] Logout functionality
-- [-] Reset password feature
+- [✔] Reset password feature
 
 ### [ ] Implement Firestore Functions
 
 #### **User Management**
 
 - [✔] Store user data in Firestore (`users/{userId}`)
-- [-] Update user profile details
-- [-] Fetch user settings from Firestore
+- [✔] Update user profile details
+- [✔] Fetch user settings from Firestore
 
 #### **Expense Management**
 
@@ -142,8 +142,8 @@
 
 #### **Export & Backup**
 
-- [-] Export expense data as CSV
-- [-] Export expense data as PDF
+- [ ] Export expense data as CSV
+- [✔] Export expense data as PDF
 - [ ] Implement cloud backup (Firestore rules & security)
 
 ---
