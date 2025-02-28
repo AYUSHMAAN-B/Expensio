@@ -248,12 +248,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                 'Hello',
                                 style: TextStyle(
                                   fontSize: 18,
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
                               ),
                               Text(
                                 user == null ? '' : user!.name,
                                 style: TextStyle(
-                                  fontSize: 24,
+                                  fontSize: 28,
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
                               ),
                               const SizedBox(height: 15),
@@ -268,6 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             child: Icon(
                               Icons.person,
                               size: 56,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -305,11 +308,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
                               '${formatIndianCurrency((totalIncome - totalExpense).toInt())} /-',

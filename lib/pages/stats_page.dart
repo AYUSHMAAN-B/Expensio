@@ -339,6 +339,7 @@ class _StatsPageState extends State<StatsPage> {
               icon: Icon(
                 Icons.picture_as_pdf,
                 size: 32,
+                color: Theme.of(context).colorScheme.primary.withAlpha(255),
               ),
             ),
           ],
@@ -465,7 +466,16 @@ class _StatsPageState extends State<StatsPage> {
                                 left: Radius.circular(16)),
                           ),
                           child: Center(
-                            child: Text('Income'),
+                            child: Text(
+                              'Income',
+                              style: TextStyle(
+                                color:
+                                    (selectedExpenseType == ExpenseType.Income)
+                                        ? Theme.of(context).colorScheme.tertiary
+                                        : Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -497,7 +507,16 @@ class _StatsPageState extends State<StatsPage> {
                                 right: Radius.circular(16)),
                           ),
                           child: Center(
-                            child: Text('Expense'),
+                            child: Text(
+                              'Expense',
+                              style: TextStyle(
+                                color:
+                                    (selectedExpenseType == ExpenseType.Expense)
+                                        ? Theme.of(context).colorScheme.tertiary
+                                        : Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
                       ),

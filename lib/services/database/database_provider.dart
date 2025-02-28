@@ -97,6 +97,8 @@ class DatabaseProvider extends ChangeNotifier {
     // Update UI
     notifyListeners();
 
+    initializeExpenseCategoryMap();
+
     // Edit Expense in Firestore
     await _db.editExpenseInFirestore(expenseId, name, amount, desc, type);
   }

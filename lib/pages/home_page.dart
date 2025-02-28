@@ -111,7 +111,20 @@ class _HomePageState extends State<HomePage>
                                       left: Radius.circular(16)),
                                 ),
                                 child: Center(
-                                  child: Text('Income'),
+                                  child: Text(
+                                    'Income',
+                                    style: TextStyle(
+                                      color: (selectedExpenseType ==
+                                              ExpenseType.Income)
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .tertiary
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -150,7 +163,20 @@ class _HomePageState extends State<HomePage>
                                       right: Radius.circular(16)),
                                 ),
                                 child: Center(
-                                  child: Text('Expense'),
+                                  child: Text(
+                                    'Expense',
+                                    style: TextStyle(
+                                      color: (selectedExpenseType ==
+                                              ExpenseType.Expense)
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .tertiary
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -500,6 +526,7 @@ class _HomePageState extends State<HomePage>
       // FAB
       floatingActionButton: FloatingActionButton(
         onPressed: () => addExpenseDialog(),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         child: Icon(Icons.add),
       ),
 
@@ -731,6 +758,7 @@ class _HomePageState extends State<HomePage>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.tertiary,
                 ),
               ),
               Text(
@@ -738,6 +766,7 @@ class _HomePageState extends State<HomePage>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.tertiary,
                 ),
               ),
             ],
@@ -805,6 +834,7 @@ class _HomePageState extends State<HomePage>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.tertiary,
                 ),
               ),
               Text(
@@ -812,6 +842,7 @@ class _HomePageState extends State<HomePage>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.tertiary,
                 ),
               ),
             ],
@@ -1019,15 +1050,31 @@ class _HomePageState extends State<HomePage>
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Income (Credit)'),
-                      Text('₹ $totalMonthIncome')
+                      Text(
+                        'Income (Credit)',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      ),
+                      Text(
+                        '₹ $totalMonthIncome',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      )
                     ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('Expense (Debit)'),
-                      Text('₹ $totalMonthExpense')
+                      Text(
+                        'Expense (Debit)',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      ),
+                      Text(
+                        '₹ $totalMonthExpense',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      )
                     ],
                   ),
                 ],
@@ -1039,13 +1086,32 @@ class _HomePageState extends State<HomePage>
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text('C / F'), Text('₹ 00.00')],
+                    children: [
+                      Text(
+                        'C / F',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      ),
+                      Text(
+                        '₹ 00.00',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      )
+                    ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('Balance'),
-                      Text('₹ ${totalMonthIncome - totalMonthExpense}')
+                      Text(
+                        'Balance',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      ),
+                      Text(
+                        '₹ ${totalMonthIncome - totalMonthExpense}',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      )
                     ],
                   ),
                 ],
