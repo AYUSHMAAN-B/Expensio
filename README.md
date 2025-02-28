@@ -58,13 +58,13 @@ flutter run
 
 _(Add relevant screenshots here)_  
 
-| Dashboard | Add Expense | Stats |
+| Home Page | Monthly Overview | Yearly Overview |
 |-----------|------------|-------|
-| ![Dashboard](screenshots/dashboard.png) | ![Add Expense](screenshots/add_expense.png) | ![Stats](screenshots/stats.png) |
+| ![Dashboard](screenshots/flutter_01.png) | ![Add Expense](screenshots/flutter_02.png) | ![Stats](screenshots/flutter_03.png) |
 
-| Savings Pots | Profile | Settings |
+| Stats | Savings Pots | Profile |
 |-------------|---------|----------|
-| ![Savings Pots](screenshots/savings_pots.png) | ![Profile](screenshots/profile.png) | ![Settings](screenshots/settings.png) |
+| ![Savings Pots](screenshots/flutter_04.png) | ![Profile](screenshots/flutter_05.png) | ![Settings](screenshots/flutter_06.png) |
 
 ---
 
