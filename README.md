@@ -62,7 +62,7 @@ _(Add relevant screenshots here)_
 |-----------|------------|-------|
 | ![Dashboard](screenshots/flutter_01.png) | ![Add Expense](screenshots/flutter_02.png) | ![Stats](screenshots/flutter_03.png) |
 
-| Stats | Savings Pots | Profile |
+| Savings Pots | Stats | Profile |
 |-------------|---------|----------|
 | ![Savings Pots](screenshots/flutter_04.png) | ![Profile](screenshots/flutter_05.png) | ![Settings](screenshots/flutter_06.png) |
 
