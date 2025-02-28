@@ -272,7 +272,7 @@ class _CategoryExpensesPageState extends State<CategoryExpensesPage> {
                     ],
                   );
                 },
-              )
+              ),
             ],
           ),
         ),

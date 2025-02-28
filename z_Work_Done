@@ -39,15 +39,16 @@
     [x] Implemented the from date and to date for each category and showed all the expenses in a separate screen.  
     [x] In the settings page, addED log out and delete account options.
     [x] Implemented the settings to change the password and user profile.  
+    [x] Implemented the download PDF functionality in the stats screen with full details of each expense.  
     
 
 
+[FUTURE DEVELOPMENTS]
+
+    [-] Implement an option for the user to keep an overall budget constraint and display it on the profile page.  
+    [-] Implement budget constraint for each category and show it in the profile page.    
+    [-] Try to add a line graph or a bar graph under the categories in the stats page.  
+    [-] Add an "About" section mentioning me, future updates, and inspirations.
 
 
-
-
-[-] Implement an option for the user to keep an overall budget constraint and display it on the profile page.  
-[-] Implement budget constraint for each category and show it in the profile page.    
-[-] Try to add a line graph or a bar graph under the categories in the stats page.  
-[-] Add an "About" section mentioning me, future updates, and inspirations.  
-[-] Implement the download PDF functionality in the stats screen with full details of each expense.  
+  

@@ -1,6 +1,7 @@
 import 'package:expense_tracker/components/pie_chart.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/services/database/database_provider.dart';
+import 'package:expense_tracker/util/pdfgenerator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -119,6 +120,8 @@ class _StatsPageState extends State<StatsPage> {
     double totalIncome;
     double totalExpense;
 
+    List<Expense> combinedExpenses = [];
+
     // Get Total [ Income / Expense ] For SelectedDate
     if (fromDate == null || tillDate == null) {
       if (selectedType == 'Monthly') {
@@ -126,6 +129,8 @@ class _StatsPageState extends State<StatsPage> {
             listeningProvider.getIncomesForMonth(month, year, selectedDate);
         final allExpenses =
             listeningProvider.getExpensesForMonth(month, year, selectedDate);
+
+        combinedExpenses = (allIncomes + allExpenses);
 
         totalIncome =
             allIncomes.fold(0.0, (sum, expense) => sum + expense.amount);
@@ -137,19 +142,22 @@ class _StatsPageState extends State<StatsPage> {
         final allExpenses =
             listeningProvider.getExpensesForYear(year, selectedDate);
 
+        combinedExpenses = (allIncomes + allExpenses);
+
         totalIncome =
             allIncomes.fold(0.0, (sum, expense) => sum + expense.amount);
         totalExpense =
             allExpenses.fold(0.0, (sum, expense) => sum + expense.amount);
       }
     }
-
     // Get Total [ Income / Expense ] For [ FromDate -> TillDate ]
     else {
       final allIncomes =
           listeningProvider.getIncomesForRange(fromDate!, tillDate!);
       final allExpenses =
           listeningProvider.getExpensesForRange(fromDate!, tillDate!);
+
+      combinedExpenses = (allIncomes + allExpenses);
 
       totalIncome =
           allIncomes.fold(0.0, (sum, expense) => sum + expense.amount);
@@ -180,7 +188,7 @@ class _StatsPageState extends State<StatsPage> {
                     selectedType = 'Monthly';
                     fromDate = DateTime(year, month, 1);
                     tillDate = DateTime(
-                        year, month, DateTime.now().lastDayOfMonth()!.day);
+                        year, month, selectedDate.lastDayOfMonth()!.day);
                   }
                 });
               },
@@ -204,6 +212,13 @@ class _StatsPageState extends State<StatsPage> {
                             selectedDate.month - 1,
                             selectedDate.day,
                           );
+
+                          fromDate = DateTime(
+                              selectedDate.year, selectedDate.month, 1);
+                          tillDate = DateTime(
+                              selectedDate.year,
+                              selectedDate.month,
+                              selectedDate.lastDayOfMonth()!.day);
                         });
                       },
                       child: Icon(
@@ -239,6 +254,13 @@ class _StatsPageState extends State<StatsPage> {
                             selectedDate.month + 1,
                             selectedDate.day,
                           );
+
+                          fromDate = DateTime(
+                              selectedDate.year, selectedDate.month, 1);
+                          tillDate = DateTime(
+                              selectedDate.year,
+                              selectedDate.month,
+                              selectedDate.lastDayOfMonth()!.day);
                         });
                       },
                       child: Icon(
@@ -257,6 +279,9 @@ class _StatsPageState extends State<StatsPage> {
                             selectedDate.month,
                             selectedDate.day,
                           );
+
+                          fromDate = DateTime(selectedDate.year, 1, 1);
+                          tillDate = DateTime(selectedDate.year, 12, 31);
                         });
                       },
                       child: Icon(
@@ -290,6 +315,9 @@ class _StatsPageState extends State<StatsPage> {
                             selectedDate.month,
                             selectedDate.day,
                           );
+
+                          fromDate = DateTime(selectedDate.year, 1, 1);
+                          tillDate = DateTime(selectedDate.year, 12, 31);
                         });
                       },
                       child: Icon(
@@ -298,6 +326,21 @@ class _StatsPageState extends State<StatsPage> {
                       ),
                     ),
                   ]),
+            IconButton(
+              onPressed: () {
+                PdfGenerator.generateExpensePdf(
+                  combinedExpenses,
+                  fromDate ?? DateTime(year, month, 1),
+                  tillDate ??
+                      DateTime(
+                          year, month, DateTime.now().lastDayOfMonth()!.day),
+                );
+              },
+              icon: Icon(
+                Icons.picture_as_pdf,
+                size: 32,
+              ),
+            ),
           ],
         ),
         centerTitle: true,
@@ -505,56 +548,6 @@ class _StatsPageState extends State<StatsPage> {
                   ],
                 ),
               ),
-
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //   children: [
-              //     // Total Income / Expense
-              //     Column(
-              //       children: [
-              //         Text(
-              //           (selectedExpenseType == ExpenseType.Expense)
-              //               ? 'Total Expense'
-              //               : 'Total Income',
-              //           style: TextStyle(fontSize: 22),
-              //         ),
-              //         Text(
-              //           (selectedExpenseType == ExpenseType.Income)
-              //               ? formatIndianCurrency(totalIncome.toInt())
-              //               : formatIndianCurrency(totalExpense.toInt()),
-              //           style: TextStyle(
-              //             fontSize: 22,
-              //             fontWeight: FontWeight.bold,
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-
-              //     SizedBox(
-              //       height: 200,
-              //       width: 200,
-              //       child: Stack(
-              //         children: [
-              //           ExpensePieChart(
-              //             expenseCategoryMap: expenseCategoryMap,
-              //             totalIncome: totalIncome,
-              //             totalExpense: totalExpense,
-              //             selectedType: selectedType,
-              //             selectedExpenseType: selectedExpenseType,
-              //             selectedDate: selectedDate,
-              //           ),
-              //           Center(
-              //             child: Icon(
-              //               Icons.category,
-              //               size: 44,
-              //               color: Theme.of(context).colorScheme.primary,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   ],
-              // ),
 
               const SizedBox(height: 10),
 

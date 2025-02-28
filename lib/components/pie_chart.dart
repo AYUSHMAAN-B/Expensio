@@ -50,8 +50,6 @@ class ExpensePieChart extends StatelessWidget {
 
           return typeMatches && dateMatches;
         }).toList();
-
-        print('EXPENSES :==> $expenses');
       }
 
       // Calculate total sum for the category
